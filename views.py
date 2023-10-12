@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 import controllers, models, schemas
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -25,7 +26,7 @@ def get_db():
         db.close()
 
 # Repositories functions
-@app.get("/repositories/", response_model=schemas.Repositories)
+@app.get("/repositories/", response_model=List[schemas.Repository])
 def read_repositories(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     repositories = controllers.get_repositories(db, skip=skip, limit=limit)
     return repositories
@@ -45,7 +46,7 @@ def create_repository(repository: schemas.RepositoryCreate, db: Session = Depend
     return controllers.create_repository(db=db, repository=repository)
 
 # Users functions
-@app.get("/users/", response_model=schemas.Users)
+@app.get("/users/", response_model=schemas.User)
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = controllers.get_users(db, skip=skip, limit=limit)
     return users
@@ -65,7 +66,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return controllers.create_user(db=db, user=user)
 
 # Commits functions
-@app.get("/commits/", response_model=schemas.Commits)
+@app.get("/commits/", response_model=schemas.Commit)
 def read_commits(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     commits = controllers.get_commits(db, skip=skip, limit=limit)
     return commits
@@ -85,7 +86,7 @@ def create_commit(commit: schemas.CommitCreate, db: Session = Depends(get_db)):
     return controllers.create_commit(db=db, commit=commit)
 
 # Pull Requests functions
-@app.get("/pull_requests/", response_model=schemas.PullRequests)
+@app.get("/pull_requests/", response_model=schemas.PullRequest)
 def read_pull_requests(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     pull_requests = controllers.get_pull_requests(db, skip=skip, limit=limit)
     return pull_requests
@@ -105,7 +106,7 @@ def create_pull_request(pull_request: schemas.PullRequestCreate, db: Session = D
     return controllers.create_pull_request(db=db, pull_request=pull_request)
 
 # Issues functions
-@app.get("/issues/", response_model=schemas.Issues)
+@app.get("/issues/", response_model=schemas.Issue)
 def read_issues(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     issues = controllers.get_issues(db, skip=skip, limit=limit)
     return issues
@@ -125,7 +126,7 @@ def create_issue(issue: schemas.IssueCreate, db: Session = Depends(get_db)):
     return controllers.create_issue(db=db, issue=issue)
 
 # Issues functions
-@app.get("/issues/", response_model=schemas.Issues)
+@app.get("/issues/", response_model=schemas.Issue)
 def read_issues(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     issues = controllers.get_issues(db, skip=skip, limit=limit)
     return issues
@@ -145,49 +146,49 @@ def create_issue(issue: schemas.IssueCreate, db: Session = Depends(get_db)):
     return controllers.create_issue(db=db, issue=issue)
 
 # Functions for the relationships between tables
-@app.get("/users/{user_id}/commits/", response_model=schemas.Commits)
+@app.get("/users/{user_id}/commits/", response_model=schemas.Commit)
 def read_commits_by_user(user_id: int, db: Session = Depends(get_db)):
     db_user = controllers.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user.commits
 
-@app.get("/users/{user_id}/pull_requests/", response_model=schemas.PullRequests)
+@app.get("/users/{user_id}/pull_requests/", response_model=schemas.PullRequest)
 def read_pull_requests_by_user(user_id: int, db: Session = Depends(get_db)):
     db_user = controllers.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user.pull_requests
 
-@app.get("/users/{user_id}/issues/", response_model=schemas.Issues)
+@app.get("/users/{user_id}/issues/", response_model=schemas.Issue)
 def read_issues_by_user(user_id: int, db: Session = Depends(get_db)):
     db_user = controllers.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user.issues
 
-@app.get("/repositories/{repository_id}/users/", response_model=schemas.Users)
+@app.get("/repositories/{repository_id}/users/", response_model=schemas.User)
 def read_users_by_repository(repository_id: int, db: Session = Depends(get_db)):
     db_repository = controllers.get_repository(db, repository_id=repository_id)
     if db_repository is None:
         raise HTTPException(status_code=404, detail="Repository not found")
     return db_repository.users
 
-@app.get("/repositories/{repository_id}/commits/", response_model=schemas.Commits)
+@app.get("/repositories/{repository_id}/commits/", response_model=schemas.Commit)
 def read_commits_by_repository(repository_id: int, db: Session = Depends(get_db)):
     db_repository = controllers.get_repository(db, repository_id=repository_id)
     if db_repository is None:
         raise HTTPException(status_code=404, detail="Repository not found")
     return db_repository.commits
 
-@app.get("/repositories/{repository_id}/pull_requests/", response_model=schemas.PullRequests)
+@app.get("/repositories/{repository_id}/pull_requests/", response_model=schemas.PullRequest)
 def read_pull_requests_by_repository(repository_id: int, db: Session = Depends(get_db)):
     db_repository = controllers.get_repository(db, repository_id=repository_id)
     if db_repository is None:
         raise HTTPException(status_code=404, detail="Repository not found")
     return db_repository.pull_requests
 
-@app.get("/repositories/{repository_id}/issues/", response_model=schemas.Issues)
+@app.get("/repositories/{repository_id}/issues/", response_model=schemas.Issue)
 def read_issues_by_repository(repository_id: int, db: Session = Depends(get_db)):
     db_repository = controllers.get_repository(db, repository_id=repository_id)
     if db_repository is None:
