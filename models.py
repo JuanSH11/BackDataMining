@@ -61,6 +61,7 @@ class Commit(Base):
     user = relationship('User', back_populates='commits')
     repository = relationship('Repository', back_populates='commits')
     resolved_issue = relationship('Issue', back_populates='resolution_commit')
+    pull_request = relationship('PullRequest', back_populates='commit', uselist = False)
 
 class PullRequest(Base):
     __tablename__ = 'pull_requests'
