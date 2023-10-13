@@ -66,7 +66,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return controllers.create_user(db=db, user=user)
 
 # Commits functions
-@app.get("/commits/", response_model=schemas.Commit)
+@app.get("/commits/", response_model=List[schemas.Commit])
 def read_commits(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     commits = controllers.get_commits(db, skip=skip, limit=limit)
     return commits
@@ -86,7 +86,7 @@ def create_commit(commit: schemas.CommitCreate, db: Session = Depends(get_db)):
     return controllers.create_commit(db=db, commit=commit)
 
 # Pull Requests functions
-@app.get("/pull_requests/", response_model=schemas.PullRequest)
+@app.get("/pull_requests/", response_model=List[schemas.PullRequest])
 def read_pull_requests(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     pull_requests = controllers.get_pull_requests(db, skip=skip, limit=limit)
     return pull_requests
@@ -106,7 +106,7 @@ def create_pull_request(pull_request: schemas.PullRequestCreate, db: Session = D
     return controllers.create_pull_request(db=db, pull_request=pull_request)
 
 # Issues functions
-@app.get("/issues/", response_model=schemas.Issue)
+@app.get("/issues/", response_model=List[schemas.Issue])
 def read_issues(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     issues = controllers.get_issues(db, skip=skip, limit=limit)
     return issues
