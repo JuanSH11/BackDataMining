@@ -21,18 +21,19 @@ class UserBase(BaseModel):
     name_user: str
     experience: str
     id_repository: int
+    id_user: int
 
 class UserCreate(UserBase):
     pass
 
 class User(UserBase):
-    id_user: int
-
+    
     class Config:
         orm_mode = True
 
 # Commit schemas
 class CommitBase(BaseModel):
+    id_commit: int
     created_at_commit: datetime
     id_user: int
     id_repository: int
@@ -41,8 +42,6 @@ class CommitCreate(CommitBase):
     pass
 
 class Commit(CommitBase):
-    id_commit: int
-
     class Config:
         orm_mode = True
 

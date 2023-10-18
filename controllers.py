@@ -37,7 +37,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 def create_user(db: Session, user: schemas.UserCreate):
-    db_user = models.User(name_user=user.name_user, experience=user.experience, id_repository=user.id_repository)
+    db_user = models.User(id_user= user.id_user, name_user=user.name_user, experience=user.experience, id_repository=user.id_repository)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -54,7 +54,7 @@ def get_commits(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Commit).offset(skip).limit(limit).all()
 
 def create_commit(db: Session, commit: schemas.CommitCreate):
-    db_commit = models.Commit(created_at_commit=commit.created_at_commit, id_user=commit.id_user, id_repository=commit.id_repository)
+    db_commit = models.Commit(id_commit=commit.id_commit ,created_at_commit=commit.created_at_commit, id_user=commit.id_user, id_repository=commit.id_repository)
     db.add(db_commit)
     db.commit()
     db.refresh(db_commit)
