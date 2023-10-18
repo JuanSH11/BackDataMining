@@ -17,7 +17,7 @@ def get_repositories(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Repository).offset(skip).limit(limit).all()
 
 def create_repository(db: Session, repository: schemas.RepositoryCreate):
-    db_repository = models.Repository(name_repository=repository.name_repository, url_repository=repository.url_repository)
+    db_repository = models.Repository(id_repository=repository.id_repository, name_repository=repository.name_repository, url_repository=repository.url_repository)
     db.add(db_repository)
     db.commit()
     db.refresh(db_repository)

@@ -6,13 +6,13 @@ from datetime import datetime
 class RepositoryBase(BaseModel):
     name_repository: str
     url_repository: str
+    id_repository: int
 
 class RepositoryCreate(RepositoryBase):
     pass
 
 class Repository(RepositoryBase):
-    id_repository: int
-
+    
     class Config:
         orm_mode = True
 
