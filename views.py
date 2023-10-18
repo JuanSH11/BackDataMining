@@ -46,7 +46,7 @@ def create_repository(repository: schemas.RepositoryCreate, db: Session = Depend
     return controllers.create_repository(db=db, repository=repository)
 
 # Users functions
-@app.get("/users/", response_model=schemas.User)
+@app.get("/users/", response_model=List[schemas.User])
 def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = controllers.get_users(db, skip=skip, limit=limit)
     return users
