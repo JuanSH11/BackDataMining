@@ -37,7 +37,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 def create_user(db: Session, user: schemas.UserCreate):
-    db_user = models.User(id_user= user.id_user, name_user=user.name_user, experience=user.experience, id_repository=user.id_repository)
+    db_user = models.User(id_user= user.id_user, name_user=user.name_user, experience=user.experience, contribution=user.contribution, id_repository=user.id_repository)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -71,7 +71,7 @@ def get_pull_requests(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.PullRequest).offset(skip).limit(limit).all()
 
 def create_pull_request(db: Session, pull_request: schemas.PullRequestCreate):
-    db_pull_request = models.PullRequest(name_pr=pull_request.name_pr, created_at_pr=pull_request.created_at_pr, status=pull_request.status, id_user=pull_request.id_user, id_repository=pull_request.id_repository, id_commit=pull_request.id_commit)
+    db_pull_request = models.PullRequest(id_pr=pull_request.id_pr, name_pr=pull_request.name_pr, created_at_pr=pull_request.created_at_pr, status=pull_request.status, id_user=pull_request.id_user, id_repository=pull_request.id_repository, id_commit=pull_request.id_commit)
     db.add(db_pull_request)
     db.commit()
     db.refresh(db_pull_request)

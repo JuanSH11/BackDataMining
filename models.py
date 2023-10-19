@@ -8,7 +8,7 @@ Base = declarative_base()
 class Repository(Base):
     __tablename__ = 'repositories'
 
-    id_repository = Column(Integer, primary_key=True)
+    id_repository = Column(String, primary_key=True)
     name_repository = Column(String)
     url_repository = Column(String)
 
@@ -21,14 +21,14 @@ class Repository(Base):
 class Issue(Base):
     __tablename__ = 'issues'
 
-    id_issue = Column(Integer, primary_key=True, index=True)
+    id_issue = Column(String, primary_key=True, index=True)
     name_issue = Column(String, index=True)
     created_at_issue = Column(DateTime, index=True)
     updated_at_issue = Column(DateTime, index=True)
     resolution_time = Column(Integer)
-    id_user = Column(Integer, ForeignKey('users.id_user'), index=True)
-    id_resolution_commit = Column(Integer, ForeignKey('commits.id_commit'), index=True)
-    id_repository = Column(Integer, ForeignKey('repositories.id_repository'), index=True)
+    id_user = Column(String, ForeignKey('users.id_user'), index=True)
+    id_resolution_commit = Column(String, ForeignKey('commits.id_commit'), index=True)
+    id_repository = Column(String, ForeignKey('repositories.id_repository'), index=True)
 
     # Relaciones
     user = relationship('User', back_populates='issues')
@@ -37,11 +37,11 @@ class Issue(Base):
 
 class User(Base):
     __tablename__ = 'users'
-
-    id_user = Column(Integer, primary_key=True, index=True)
+    id_user = Column(String, primary_key=True, index=True)
     name_user = Column(String, index=True)
     experience = Column(String)
-    id_repository = Column(Integer, ForeignKey('repositories.id_repository'), index=True)
+    contribution = Column(String)
+    id_repository = Column(String, ForeignKey('repositories.id_repository'), index=True)
 
     # Relaciones
     repository = relationship('Repository', back_populates='users')
@@ -52,10 +52,10 @@ class User(Base):
 class Commit(Base):
     __tablename__ = 'commits'
 
-    id_commit = Column(Integer, primary_key=True, index=True)
+    id_commit = Column(String, primary_key=True, index=True)
     created_at_commit = Column(DateTime, index=True)
-    id_user = Column(Integer, ForeignKey('users.id_user'), index=True)
-    id_repository = Column(Integer, ForeignKey('repositories.id_repository'), index=True)
+    id_user = Column(String, ForeignKey('users.id_user'), index=True)
+    id_repository = Column(String, ForeignKey('repositories.id_repository'), index=True)
 
     # Relaciones
     user = relationship('User', back_populates='commits')
@@ -66,13 +66,14 @@ class Commit(Base):
 class PullRequest(Base):
     __tablename__ = 'pull_requests'
 
-    id_pr = Column(Integer, primary_key=True, index=True)
+    id_pr = Column(String, primary_key=True, index=True)
     name_pr = Column(String, index=True)
     created_at_pr = Column(DateTime, index=True)
+    closed_at_pr = Column(DateTime, index=True)
     status = Column(String, index=True)
-    id_user = Column(Integer, ForeignKey('users.id_user'), index=True)
-    id_repository = Column(Integer, ForeignKey('repositories.id_repository'), index=True)
-    id_commit = Column(Integer, ForeignKey('commits.id_commit'), index=True)
+    id_user = Column(String, ForeignKey('users.id_user'), index=True)
+    id_repository = Column(String, ForeignKey('repositories.id_repository'), index=True)
+    id_commit = Column(String, ForeignKey('commits.id_commit'), index=True)
 
     # Relaciones
     repository = relationship('Repository', back_populates='pull_requests')
@@ -81,6 +82,6 @@ class PullRequest(Base):
 
 # Tabla de asociación para la relación muchos a muchos entre User y PullRequest
 user_pull_request_association = Table('user_pull_request_association', Base.metadata,
-    Column('user_id', Integer, ForeignKey('users.id_user')),
-    Column('pull_request_id', Integer, ForeignKey('pull_requests.id_pr'))
+    Column('user_id', String, ForeignKey('users.id_user')),
+    Column('pull_request_id', String, ForeignKey('pull_requests.id_pr'))
 )

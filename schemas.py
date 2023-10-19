@@ -6,7 +6,7 @@ from datetime import datetime
 class RepositoryBase(BaseModel):
     name_repository: str
     url_repository: str
-    id_repository: int
+    id_repository: str
 
 class RepositoryCreate(RepositoryBase):
     pass
@@ -18,10 +18,11 @@ class Repository(RepositoryBase):
 
 # User schemas
 class UserBase(BaseModel):
+    id_user: str
     name_user: str
     experience: str
-    id_repository: int
-    id_user: int
+    id_repository: str
+    contribution: str
 
 class UserCreate(UserBase):
     pass
@@ -33,10 +34,10 @@ class User(UserBase):
 
 # Commit schemas
 class CommitBase(BaseModel):
-    id_commit: int
+    id_commit: str
     created_at_commit: datetime
-    id_user: int
-    id_repository: int
+    id_user: str
+    id_repository: str
 
 class CommitCreate(CommitBase):
     pass
@@ -47,38 +48,37 @@ class Commit(CommitBase):
 
 # Issue schemas
 class IssueBase(BaseModel):
+    id_issue: str
     name_issue: str
     created_at_issue: datetime
     updated_at_issue: datetime
     resolution_time: int
-    id_user: int
-    id_resolution_commit: int
-    id_repository: int
+    id_user: str
+    id_resolution_commit: str
+    id_repository: str
 
 class IssueCreate(IssueBase):
     pass
 
 class Issue(IssueBase):
-    id_issue: int
-
     class Config:
         orm_mode = True
 
 # PullRequest schemas
 class PullRequestBase(BaseModel):
+    id_pr: str
     name_pr: str
     created_at_pr: datetime
+    closed_at_pr: datetime
     status: str
-    id_user: int
-    id_repository: int
-    id_commit: int
+    id_user: str
+    id_repository: str
+    id_commit: str
 
 class PullRequestCreate(PullRequestBase):
     pass
 
 class PullRequest(PullRequestBase):
-    id_pr: int
-
     class Config:
         orm_mode = True
 

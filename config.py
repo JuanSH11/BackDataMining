@@ -1,2 +1,2 @@
 gh_user = "JuanSH11"
-gh_token = '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'
+gh_token = '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'

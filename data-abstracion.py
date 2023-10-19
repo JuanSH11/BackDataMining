@@ -6,7 +6,12 @@ import numpy as np
 from sqlalchemy import create_engine, engine, text, types, MetaData, Table, String
 from datetime import datetime
 import config
-import os 
+import os
+from database import SessionLocal 
+import schemas
+import controllers
+
+
 
 # API URL
 github_api = "https://api.github.com"
@@ -26,21 +31,30 @@ def repo_info(repo, owner, api):
     repo_info = github_session.get(url=url)
     repo_info_list = repo_info.json()
     # Get id of the repository
-    id_repo = repo_info_list['id']
-    name_repo = repo_info_list['name']
-    url_repo = repo_info_list['html_url']
+    id_repository = repo_info_list['id']
+    name_repository = repo_info_list['name']
+    url_repository = repo_info_list['html_url']
 
     #General information of the repository
-    generalInfo = [id_repo, name_repo, url_repo ]
-    return generalInfo
-repos = json_normalize(repo_info('DeepSpeed', 'microsoft', github_api))
-repos.to_csv('data/repos.csv', sep=';')
+    repo_info_data = {
+        "id_repository": id_repository,
+        "name_repository": name_repository,
+        "url_repository": url_repository
+    }
+    return repo_info_data
+
+def load_repo_info_data(db):
+    repo_info_data = repo_info('DeepSpeed', 'microsoft', github_api)
+    # Usar la función de controlador para crear un nuevo registro de repositorio en la base de datos
+    repo = schemas.RepositoryCreate(**repo_info_data)
+    controllers.create_repository(db, repo)
+
+# repos = json_normalize(repo_info('DeepSpeed', 'microsoft', github_api))
+# repos.to_csv('data/repos.csv', sep=';')
 
 # Id of the repository
-id_general_repo = repo_info('DeepSpeed', 'microsoft', github_api)[1]
+id_general_repo = repo_info('DeepSpeed', 'microsoft', github_api)["id_repository"]
 print(id_general_repo)
-
-
 
 # Get the commits
 def commits_of_repo(repo, owner, api):
@@ -54,23 +68,23 @@ def commits_of_repo(repo, owner, api):
 
         # Procesar y guardar la información de los commits
         for commit_data in commit_pg_list:
-            sha = commit_data["sha"]
-            login = commit_data["author"]["login"]
-            creation_date = commit_data["commit"]["author"]["date"]
+            id_commit = commit_data["sha"]
+            # id_user = commit_data["author"]["login"]
+            created_at_commit = commit_data["commit"]["author"]["date"]
             # Verificar si "author" es None y si contiene "id"
             if commit_data.get("author") is not None and "id" in commit_data["author"]:
-                author_id = commit_data["author"]["id"]
+                id_user = commit_data["author"]["id"]
             else:
-                author_id = "ID Desconocido"
+                id_user = "ID Desconocido"
             id_repository = id_general_repo
 
             # Agregar la información a la lista
             commits.append({
-                "SHA del commit": sha,
-                "Login": login,
-                "Fecha de creación": creation_date,
-                "ID del author": author_id,
-                "ID repositorio": id_repository
+                "id_commit": id_commit,
+                # "Login": login,
+                "created_at_commit": created_at_commit,
+                "id_user": id_user,
+                "id_repository": id_repository
             })
 
         if 'Link' in commit_pg.headers:
@@ -79,8 +93,14 @@ def commits_of_repo(repo, owner, api):
         i = i + 1
     return commits
 
-commits = json_normalize(commits_of_repo('DeepSpeed', 'microsoft', github_api))
-commits.to_csv('data/commits.csv')
+def load_commits_data(db):
+    commits_data = commits_of_repo('DeepSpeed', 'microsoft', github_api)
+    for commit_data in commits_data:
+        # Usa la función de controlador para crear un nuevo commit en la base de datos
+        commit = schemas.CommitCreate(**commit_data)
+        controllers.create_commit(db, commit)
+# commits = json_normalize(commits_of_repo('DeepSpeed', 'microsoft', github_api))
+# commits.to_csv('data/commits.csv')
 
 # Get the closed pulls
 def closed_pulls_of_repo(repo, owner, api):
@@ -94,12 +114,12 @@ def closed_pulls_of_repo(repo, owner, api):
 
         # Procesar y guardar la información de los pulls
         for closed_pull_data in pull_pg_list:
-            id_pull = closed_pull_data["id"]
-            name = closed_pull_data["title"]
+            id_pr = closed_pull_data["id"]
+            name_pr = closed_pull_data["title"]
             id_user = closed_pull_data["user"]["id"]
-            login = closed_pull_data["user"]["login"]
+            # login = closed_pull_data["user"]["login"]
             status = closed_pull_data["state"]
-            created_at = closed_pull_data["created_at"]
+            created_at_pr = closed_pull_data["created_at"]
             closed_at = closed_pull_data["closed_at"]
             id_commit = closed_pull_data["merge_commit_sha"]
             id_repository = id_general_repo
@@ -107,12 +127,12 @@ def closed_pulls_of_repo(repo, owner, api):
 
             # Agregar la información a la lista
             closed_pulls.append({
-                "ID pull": id_pull,
-                "Name": name,
-                "ID Usuario": id_user,
-                "Login": login,
-                "Estado": status,
-                "Fecha de creación": created_at,
+                "id_pr": id_pr,
+                "name_pr": name_pr,
+                "id_user": id_user,
+                # "Login": login,
+                "status": status,
+                "created_at_pr": created_at_pr,
                 "Fecha de cierre": closed_at,
                 "ID commit": id_commit,
                 "ID repositorio": id_repository
@@ -166,9 +186,16 @@ def open_pulls_of_repo(repo, owner, api):
         i = i + 1
     return open_pulls
 
+def load_pulls_data(db):
+    pulls_data = closed_pulls_of_repo('DeepSpeed', 'microsoft', github_api) + open_pulls_of_repo('DeepSpeed', 'microsoft', github_api)
+    for pull_data in pulls_data:
+        # Usa la función de controlador para crear un nuevo pull request en la base de datos
+        pull = schemas.PullRequestCreate(**pull_data)
+        controllers.create_pull_request(db, pull)
+
 # Combine open_pulls and closed_pulls
-pulls = json_normalize( closed_pulls_of_repo('DeepSpeed', 'microsoft', github_api) + open_pulls_of_repo('DeepSpeed', 'microsoft', github_api))
-pulls.to_csv('data/pulls.csv')
+# pulls = json_normalize( closed_pulls_of_repo('DeepSpeed', 'microsoft', github_api) + open_pulls_of_repo('DeepSpeed', 'microsoft', github_api))
+# pulls.to_csv('data/pulls.csv')
 
 
 # Get the open_issues
@@ -263,11 +290,25 @@ def closed_issues_of_repo(repo, owner, api):
         i = i + 1
     return closed_issues
 
-#Get the issues
-issues = json_normalize( open_issues_of_repo('DeepSpeed', 'microsoft', github_api) + closed_issues_of_repo('DeepSpeed', 'microsoft', github_api))
-issues.to_csv('data/issues.csv', sep=';')
+def load_issues_data(db):
+    issues_data = open_issues_of_repo('DeepSpeed', 'microsoft', github_api) + closed_issues_of_repo('DeepSpeed', 'microsoft', github_api)
+    for issue_data in issues_data:
+        # Usa la función de controlador para crear un nuevo issue en la base de datos
+        issue = schemas.IssueCreate(**issue_data)
+        controllers.create_issue(db, issue)
+
+def load_users_data(db):
+    return None
 
 
+db = SessionLocal()
+load_repo_info_data(db)
+load_users_data(db)
+load_commits_data(db)
+load_pulls_data(db)
+load_issues_data(db)
+
+db.close()
 #Finish timestamp
 finish_time = datetime.now()
 
