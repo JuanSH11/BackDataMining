@@ -146,28 +146,28 @@ def create_issue(issue: schemas.IssueCreate, db: Session = Depends(get_db)):
     return controllers.create_issue(db=db, issue=issue)
 
 # Functions for the relationships between tables
-@app.get("/users/{user_id}/commits/", response_model=schemas.Commit)
+@app.get("/users/{user_id}/commits/", response_model=List[schemas.Commit])
 def read_commits_by_user(user_id: int, db: Session = Depends(get_db)):
     db_user = controllers.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user.commits
 
-@app.get("/users/{user_id}/pull_requests/", response_model=schemas.PullRequest)
+@app.get("/users/{user_id}/pull_requests/", response_model=List[schemas.PullRequest])
 def read_pull_requests_by_user(user_id: int, db: Session = Depends(get_db)):
     db_user = controllers.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user.pull_requests
 
-@app.get("/users/{user_id}/issues/", response_model=schemas.Issue)
+@app.get("/users/{user_id}/issues/", response_model=List[schemas.Issue])
 def read_issues_by_user(user_id: int, db: Session = Depends(get_db)):
     db_user = controllers.get_user(db, user_id=user_id)
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user.issues
 
-@app.get("/repositories/{repository_id}/users/", response_model=schemas.User)
+@app.get("/repositories/{repository_id}/users/", response_model=List[schemas.User])
 def read_users_by_repository(repository_id: int, db: Session = Depends(get_db)):
     db_repository = controllers.get_repository(db, repository_id=repository_id)
     if db_repository is None:
