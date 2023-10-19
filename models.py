@@ -38,7 +38,7 @@ class Issue(Base):
 class User(Base):
     __tablename__ = 'users'
     id_user = Column(String, primary_key=True, index=True)
-    name_user = Column(String, index=True)
+    login_user = Column(String, index=True)
     experience = Column(String)
     contribution = Column(String)
     id_repository = Column(String, ForeignKey('repositories.id_repository'), index=True)

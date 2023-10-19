@@ -19,7 +19,7 @@ class Repository(RepositoryBase):
 # User schemas
 class UserBase(BaseModel):
     id_user: str
-    name_user: str
+    login_user: str
     experience: str
     id_repository: str
     contribution: str
