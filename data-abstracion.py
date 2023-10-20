@@ -134,12 +134,12 @@ def closed_pulls_of_repo(repo, owner, api):
 
         # Procesar y guardar la información de los pulls
         for closed_pull_data in pull_pg_list:
-            id_pr = closed_pull_data["id"]
-            name_pr = closed_pull_data["title"]
+            id_pull = closed_pull_data["id"]
+            name = closed_pull_data["title"]
             id_user = closed_pull_data["user"]["id"]
-            login = closed_pull_data["user"]["login"]
+            login_user = closed_pull_data["user"]["login"]
             status = closed_pull_data["state"]
-            created_at_pr = closed_pull_data["created_at"]
+            created_at = closed_pull_data["created_at"]
             closed_at = closed_pull_data["closed_at"]
             id_commit = closed_pull_data["merge_commit_sha"]
             id_repository = id_general_repo
@@ -147,15 +147,15 @@ def closed_pulls_of_repo(repo, owner, api):
 
             # Agregar la información a la lista
             closed_pulls.append({
-                "id_pr": id_pr,
-                "name_pr": name_pr,
+                "id_pull": id_pull,
+                "name": name,
                 "id_user": id_user,
-                "Login": login,
+                "login_user": login_user,
                 "status": status,
-                "created_at_pr": created_at_pr,
-                "Fecha de cierre": closed_at,
-                "ID commit": id_commit,
-                "ID repositorio": id_repository
+                "created_at": created_at,
+                "closed_at": closed_at,
+                "id_commit": id_commit,
+                "id_repository": id_repository
             })
 
         if 'Link' in pull_pg.headers:
@@ -179,7 +179,7 @@ def open_pulls_of_repo(repo, owner, api):
             id_pull = pull_data["id"]
             name = pull_data["title"]
             id_user = pull_data["user"]["id"]
-            login = pull_data["user"]["login"]
+            login_user = pull_data["user"]["login"]
             status = pull_data["state"]
             created_at = pull_data["created_at"]
             closed_at = pull_data["closed_at"]
@@ -189,15 +189,15 @@ def open_pulls_of_repo(repo, owner, api):
 
             # Agregar la información a la lista
             open_pulls.append({
-                "ID pull": id_pull,
-                "Name": name,
-                "ID Usuario": id_user,
-                "Login": login,
-                "Estado": status,
-                "Fecha de creación": created_at,
-                "Fecha de cierre": closed_at,
-                "ID commit": id_commit,
-                "ID repositorio": id_repository
+                "id_pull": id_pull,
+                "name": name,
+                "id_user": id_user,
+                "login_user": login_user,
+                "status": status,
+                "created_at": created_at,
+                "closed_at": closed_at,
+                "id_commit": id_commit,
+                "id_repository": id_repository
             })
 
         if 'Link' in pull_pg.headers:
@@ -209,7 +209,26 @@ def open_pulls_of_repo(repo, owner, api):
 def load_pulls_data(db):
     pulls_data = closed_pulls_of_repo('DeepSpeed', 'microsoft', github_api) + open_pulls_of_repo('DeepSpeed', 'microsoft', github_api)
     for pull_data in pulls_data:
+        # Usa la función de controlador para crear un nuevo user en la base de datos
+        user_data = {
+        "id_user": pull_data["id_user"],
+        "login_user": pull_data["login_user"],
+        "experience": None,
+        "id_repository": pull_data["id_repository"]
+        }
+        user = schemas.UserCreate(**user_data)
+        controllers.create_user(db, user)
         # Usa la función de controlador para crear un nuevo pull request en la base de datos
+        pull_data = {
+        "id_pull": pull_data["id_pull"],
+        "name": pull_data["name"],
+        "created_at": pull_data["created_at"],
+        "closed_at": pull_data["closed_at"],
+        "status": pull_data["status"],
+        "id_user": pull_data["id_user"],
+        "id_repository": pull_data["id_repository"],
+        "id_commit": pull_data["id_commit"]
+        }
         pull = schemas.PullRequestCreate(**pull_data)
         controllers.create_pull_request(db, pull)
 
@@ -317,15 +336,11 @@ def load_issues_data(db):
         issue = schemas.IssueCreate(**issue_data)
         controllers.create_issue(db, issue)
 
-#def load_users_data(db):
-#    return None
-
 
 db = SessionLocal()
 load_repo_info_data(db)
-#load_users_data(db)
 load_commits_data(db)
-#load_pulls_data(db)
+load_pulls_data(db)
 #load_issues_data(db)
 
 db.close()

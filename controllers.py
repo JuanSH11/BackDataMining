@@ -68,16 +68,16 @@ def create_commit(db: Session, commit: schemas.CommitCreate):
 
 # Pull Requests functions
 def get_pull_request(db: Session, pull_request_id: int):
-    return db.query(models.PullRequest).filter(models.PullRequest.id_pr == pull_request_id).first()
+    return db.query(models.PullRequest).filter(models.PullRequest.id_pull == pull_request_id).first()
 
 def get_pull_request_by_id(db: Session, pull_request_id: int):
-    return db.query(models.PullRequest).filter(models.PullRequest.id_pr == pull_request_id).first()
+    return db.query(models.PullRequest).filter(models.PullRequest.id_pull == pull_request_id).first()
 
 def get_pull_requests(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.PullRequest).offset(skip).limit(limit).all()
 
 def create_pull_request(db: Session, pull_request: schemas.PullRequestCreate):
-    db_pull_request = models.PullRequest(id_pr=pull_request.id_pr, name_pr=pull_request.name_pr, created_at_pr=pull_request.created_at_pr, status=pull_request.status, id_user=pull_request.id_user, id_repository=pull_request.id_repository, id_commit=pull_request.id_commit)
+    db_pull_request = models.PullRequest(id_pull=pull_request.id_pull, name=pull_request.name, created_at=pull_request.created_at, closed_at=pull_request.closed_at,status=pull_request.status, id_user=pull_request.id_user, id_repository=pull_request.id_repository, id_commit=pull_request.id_commit)
     db.add(db_pull_request)
     db.commit()
     db.refresh(db_pull_request)

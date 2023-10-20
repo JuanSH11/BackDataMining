@@ -65,10 +65,10 @@ class Commit(Base):
 class PullRequest(Base):
     __tablename__ = 'pull_requests'
 
-    id_pr = Column(String, primary_key=True, index=True)
-    name_pr = Column(String, index=True)
-    created_at_pr = Column(DateTime, index=True)
-    closed_at_pr = Column(DateTime, index=True)
+    id_pull = Column(String, primary_key=True, index=True)
+    name = Column(String, index=True)
+    created_at = Column(DateTime, index=True)
+    closed_at = Column(DateTime, index=True, nullable=True)
     status = Column(String, index=True)
     id_user = Column(String, ForeignKey('users.id_user'), index=True)
     id_repository = Column(String, ForeignKey('repositories.id_repository'), index=True)
@@ -82,5 +82,5 @@ class PullRequest(Base):
 # Tabla de asociación para la relación muchos a muchos entre User y PullRequest
 user_pull_request_association = Table('user_pull_request_association', Base.metadata,
     Column('user_id', String, ForeignKey('users.id_user')),
-    Column('pull_request_id', String, ForeignKey('pull_requests.id_pr'))
+    Column('pull_request_id', String, ForeignKey('pull_requests.id_pull'))
 )

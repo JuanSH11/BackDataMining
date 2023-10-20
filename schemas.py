@@ -65,10 +65,10 @@ class Issue(IssueBase):
 
 # PullRequest schemas
 class PullRequestBase(BaseModel):
-    id_pr: str
-    name_pr: str
-    created_at_pr: datetime
-    closed_at_pr: datetime
+    id_pull: str
+    name: str
+    created_at: datetime
+    closed_at: Optional[datetime] = None
     status: str
     id_user: str
     id_repository: str
