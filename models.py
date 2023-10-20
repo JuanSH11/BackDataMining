@@ -72,7 +72,7 @@ class PullRequest(Base):
     status = Column(String, index=True)
     id_user = Column(String, ForeignKey('users.id_user'), index=True)
     id_repository = Column(String, ForeignKey('repositories.id_repository'), index=True)
-    id_commit = Column(String, ForeignKey('commits.id_commit'), index=True)
+    id_commit = Column(String, ForeignKey('commits.id_commit'), index=True, nullable=True)
 
     # Relaciones
     repository = relationship('Repository', back_populates='pull_requests')

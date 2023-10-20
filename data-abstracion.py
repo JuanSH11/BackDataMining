@@ -13,6 +13,7 @@ import controllers
 
 
 
+
 # API URL
 github_api = "https://api.github.com"
 github_repo = ""
@@ -141,9 +142,17 @@ def closed_pulls_of_repo(repo, owner, api):
             status = closed_pull_data["state"]
             created_at = closed_pull_data["created_at"]
             closed_at = closed_pull_data["closed_at"]
-            id_commit = closed_pull_data["merge_commit_sha"]
-            id_repository = id_general_repo
+            # Verificar si "merged_at" es None (pull request no fue aceptado)
+            # Verificar si pull request fue mergeado a rama principal, sino api de GitHub no tiene en cuenta el commit
+            if (
+                closed_pull_data.get("merged_at") is not None
+                and closed_pull_data["base"]["ref"] == "master"
+            ):
+                id_commit = closed_pull_data["merge_commit_sha"]
+            else:
+                id_commit = None
             
+            id_repository = id_general_repo
 
             # Agregar la información a la lista
             closed_pulls.append({
@@ -183,7 +192,7 @@ def open_pulls_of_repo(repo, owner, api):
             status = pull_data["state"]
             created_at = pull_data["created_at"]
             closed_at = pull_data["closed_at"]
-            id_commit = pull_data["merge_commit_sha"]
+            id_commit = None
             id_repository = id_general_repo
             
 
@@ -220,17 +229,18 @@ def load_pulls_data(db):
         controllers.create_user(db, user)
         # Usa la función de controlador para crear un nuevo pull request en la base de datos
         pull_data = {
-        "id_pull": pull_data["id_pull"],
-        "name": pull_data["name"],
-        "created_at": pull_data["created_at"],
-        "closed_at": pull_data["closed_at"],
-        "status": pull_data["status"],
-        "id_user": pull_data["id_user"],
-        "id_repository": pull_data["id_repository"],
-        "id_commit": pull_data["id_commit"]
+            "id_pull": pull_data["id_pull"],
+            "name": pull_data["name"],
+            "created_at": pull_data["created_at"],
+            "closed_at": pull_data["closed_at"],
+            "status": pull_data["status"],
+            "id_user": pull_data["id_user"],
+            "id_repository": pull_data["id_repository"],
+            "id_commit": pull_data["id_commit"]
         }
         pull = schemas.PullRequestCreate(**pull_data)
         controllers.create_pull_request(db, pull)
+            
 
 # Combine open_pulls and closed_pulls
 # pulls = json_normalize( closed_pulls_of_repo('DeepSpeed', 'microsoft', github_api) + open_pulls_of_repo('DeepSpeed', 'microsoft', github_api))

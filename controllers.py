@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 import models, schemas
 from sqlalchemy import or_
 import datetime
+from sqlalchemy.exc import IntegrityError
 
 # Repositories functions
 def get_repository(db: Session, repository_id: int):
@@ -77,11 +78,20 @@ def get_pull_requests(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.PullRequest).offset(skip).limit(limit).all()
 
 def create_pull_request(db: Session, pull_request: schemas.PullRequestCreate):
-    db_pull_request = models.PullRequest(id_pull=pull_request.id_pull, name=pull_request.name, created_at=pull_request.created_at, closed_at=pull_request.closed_at,status=pull_request.status, id_user=pull_request.id_user, id_repository=pull_request.id_repository, id_commit=pull_request.id_commit)
-    db.add(db_pull_request)
-    db.commit()
-    db.refresh(db_pull_request)
-    return db_pull_request
+    try:
+        db_pull_request = models.PullRequest(id_pull=pull_request.id_pull, name=pull_request.name, created_at=pull_request.created_at, closed_at=pull_request.closed_at,status=pull_request.status, id_user=pull_request.id_user, id_repository=pull_request.id_repository, id_commit=pull_request.id_commit)
+        db.add(db_pull_request)
+        db.commit()
+        db.refresh(db_pull_request)
+        return db_pull_request
+    except IntegrityError:
+        db.rollback()
+        pull_request.id_commit = None  # Configurar id_commit en None
+        db_pull_request = models.PullRequest(id_pull=pull_request.id_pull, name=pull_request.name, created_at=pull_request.created_at, closed_at=pull_request.closed_at,status=pull_request.status, id_user=pull_request.id_user, id_repository=pull_request.id_repository, id_commit=pull_request.id_commit)
+        db.add(db_pull_request)
+        db.commit()
+        db.refresh(db_pull_request)
+        return db_pull_request
 
 # Issues functions
 def get_issue(db: Session, issue_id: int):

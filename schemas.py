@@ -72,7 +72,7 @@ class PullRequestBase(BaseModel):
     status: str
     id_user: str
     id_repository: str
-    id_commit: str
+    id_commit: Optional[str] = None
 
 class PullRequestCreate(PullRequestBase):
     pass
