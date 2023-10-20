@@ -69,7 +69,11 @@ def commits_of_repo(repo, owner, api):
         # Procesar y guardar la información de los commits
         for commit_data in commit_pg_list:
             id_commit = commit_data["sha"]
-            # id_user = commit_data["author"]["login"]
+            #Verificar si "author" es None y si contiene "login"
+            if commit_data.get("author") is not None and "login" in commit_data["author"]:
+                login_user = commit_data["author"]["login"]
+            else:
+                login_user = "Login Desconocido"
             created_at_commit = commit_data["commit"]["author"]["date"]
             # Verificar si "author" es None y si contiene "id"
             if commit_data.get("author") is not None and "id" in commit_data["author"]:
@@ -81,7 +85,7 @@ def commits_of_repo(repo, owner, api):
             # Agregar la información a la lista
             commits.append({
                 "id_commit": id_commit,
-                # "Login": login,
+                "login_user": login_user,
                 "created_at_commit": created_at_commit,
                 "id_user": id_user,
                 "id_repository": id_repository
@@ -96,7 +100,23 @@ def commits_of_repo(repo, owner, api):
 def load_commits_data(db):
     commits_data = commits_of_repo('DeepSpeed', 'microsoft', github_api)
     for commit_data in commits_data:
+        # Usa la función de controlador para crear un nuevo user en la base de datos
+        user_data = {
+        "id_user": commit_data["id_user"],
+        "login_user": commit_data["login_user"],
+        "experience": None,
+        "id_repository": commit_data["id_repository"]
+        }
+        user = schemas.UserCreate(**user_data)
+        controllers.create_user(db, user)
+
         # Usa la función de controlador para crear un nuevo commit en la base de datos
+        commit_data = {
+        "id_commit": commit_data["id_commit"],
+        "created_at_commit": commit_data["created_at_commit"],
+        "id_user": commit_data["id_user"],
+        "id_repository": commit_data["id_repository"]
+        }
         commit = schemas.CommitCreate(**commit_data)
         controllers.create_commit(db, commit)
 # commits = json_normalize(commits_of_repo('DeepSpeed', 'microsoft', github_api))
@@ -117,7 +137,7 @@ def closed_pulls_of_repo(repo, owner, api):
             id_pr = closed_pull_data["id"]
             name_pr = closed_pull_data["title"]
             id_user = closed_pull_data["user"]["id"]
-            # login = closed_pull_data["user"]["login"]
+            login = closed_pull_data["user"]["login"]
             status = closed_pull_data["state"]
             created_at_pr = closed_pull_data["created_at"]
             closed_at = closed_pull_data["closed_at"]
@@ -130,7 +150,7 @@ def closed_pulls_of_repo(repo, owner, api):
                 "id_pr": id_pr,
                 "name_pr": name_pr,
                 "id_user": id_user,
-                # "Login": login,
+                "Login": login,
                 "status": status,
                 "created_at_pr": created_at_pr,
                 "Fecha de cierre": closed_at,
@@ -297,16 +317,16 @@ def load_issues_data(db):
         issue = schemas.IssueCreate(**issue_data)
         controllers.create_issue(db, issue)
 
-def load_users_data(db):
-    return None
+#def load_users_data(db):
+#    return None
 
 
 db = SessionLocal()
 load_repo_info_data(db)
-load_users_data(db)
+#load_users_data(db)
 load_commits_data(db)
-load_pulls_data(db)
-load_issues_data(db)
+#load_pulls_data(db)
+#load_issues_data(db)
 
 db.close()
 #Finish timestamp
