@@ -37,10 +37,16 @@ def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()
 
 def create_user(db: Session, user: schemas.UserCreate):
-    db_user = models.User(id_user= user.id_user, login_user=user.login_user, experience=user.experience, contribution=user.contribution, id_repository=user.id_repository)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    db_user = None
+
+    # Verifica si ya existe un usuario con el mismo id en la base de datos
+    existing_user = db.query(models.User).filter(models.User.id_user == user.id_user).first()
+    if not existing_user:
+        db_user = models.User(id_user= user.id_user, login_user=user.login_user, experience=user.experience, id_repository=user.id_repository)
+        db.add(db_user)
+        db.commit()
+        db.refresh(db_user)
+
     return db_user
 
 # Commits functions
