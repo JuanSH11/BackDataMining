@@ -20,9 +20,8 @@ class Repository(RepositoryBase):
 class UserBase(BaseModel):
     id_user: str
     login_user: str
-    experience: str
+    experience: Optional[str] = None
     id_repository: str
-    contribution: str
 
 class UserCreate(UserBase):
     pass
