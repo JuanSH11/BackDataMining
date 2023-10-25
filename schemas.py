@@ -48,12 +48,12 @@ class Commit(CommitBase):
 # Issue schemas
 class IssueBase(BaseModel):
     id_issue: str
-    name_issue: str
-    created_at_issue: datetime
-    updated_at_issue: datetime
-    resolution_time: int
+    name: str
+    created_at: datetime
+    closed_at: Optional[datetime] = None
+    resolution_time: Optional[int] = None
     id_user: str
-    id_resolution_commit: str
+    id_resolution_commit: Optional[str] = None
     id_repository: str
 
 class IssueCreate(IssueBase):

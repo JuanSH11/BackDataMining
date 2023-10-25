@@ -22,12 +22,12 @@ class Issue(Base):
     __tablename__ = 'issues'
 
     id_issue = Column(String, primary_key=True, index=True)
-    name_issue = Column(String, index=True)
-    created_at_issue = Column(DateTime, index=True)
-    updated_at_issue = Column(DateTime, index=True)
-    resolution_time = Column(Integer)
+    name = Column(String, index=True)
+    created_at = Column(DateTime, index=True)
+    closed_at = Column(DateTime, index=True, nullable=True)
+    resolution_time = Column(Integer, nullable=True)
     id_user = Column(String, ForeignKey('users.id_user'), index=True)
-    id_resolution_commit = Column(String, ForeignKey('commits.id_commit'), index=True)
+    id_resolution_commit = Column(String, ForeignKey('commits.id_commit'), index=True, nullable=True)
     id_repository = Column(String, ForeignKey('repositories.id_repository'), index=True)
 
     # Relaciones

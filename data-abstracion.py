@@ -266,25 +266,27 @@ def open_issues_of_repo(repo, owner, api):
             id_issue = issue_data["id"]
             name = issue_data["title"]
             id_user = issue_data["user"]["id"]
-            login = issue_data["user"]["login"]
+            login_user = issue_data["user"]["login"]
             created_at = issue_data["created_at"]
             closed_at = issue_data["closed_at"]
             status = issue_data["state"]
             id_repository = id_general_repo
+            id_resolution_commit = None
             resolution_time = None
             
 
             # Agregar la información a la lista
             issues.append({
-                "ID issue": id_issue,
-                "Name": name,
-                "ID Usuario": id_user,
-                "Login": login,
-                "Fecha de creación": created_at,
-                "Fecha de cierre": closed_at,
-                "Estado": status,
-                "Tiempo de resolución": resolution_time,
-                "ID repositorio": id_repository
+                "id_issue": id_issue,
+                "name": name,
+                "id_user": id_user,
+                "login_user": login_user,
+                "created_at": created_at,
+                "closed_at": closed_at,
+                "status": status,
+                "id_repository": id_repository,
+                "id_resolution_commit": id_resolution_commit,
+                "resolution_time": resolution_time
             })
 
         if 'Link' in issue_pg.headers:
@@ -312,25 +314,27 @@ def closed_issues_of_repo(repo, owner, api):
             id_issue = issue_data["id"]
             name = issue_data["title"]
             id_user = issue_data["user"]["id"]
-            login = issue_data["user"]["login"]
+            login_user = issue_data["user"]["login"]
             created_at = issue_data["created_at"]
             closed_at = issue_data["closed_at"]
             status = issue_data["state"]
             id_repository = id_general_repo
-            #Parse resolution_time
-            resolution_time = (datetime.strptime(closed_at, '%Y-%m-%dT%H:%M:%SZ') - datetime.strptime(created_at, '%Y-%m-%dT%H:%M:%SZ')).total_seconds()
+            id_resolution_commit = None
+            #Parse resolution_time in hours
+            resolution_time = (datetime.strptime(closed_at, '%Y-%m-%dT%H:%M:%SZ') - datetime.strptime(created_at, '%Y-%m-%dT%H:%M:%SZ')).total_seconds() / 3600
 
             # Agregar la información a la lista
             closed_issues.append({
-                "ID issue": id_issue,
-                "Name": name,
-                "ID Usuario": id_user,
-                "Login": login,
-                "Fecha de creación": created_at,
-                "Fecha de cierre": closed_at,
-                "Estado": status,
-                "Tiempo de resolución": resolution_time,
-                "ID repositorio": id_repository
+                "id_issue": id_issue,
+                "name": name,
+                "id_user": id_user,
+                "login_user": login_user,
+                "created_at": created_at,
+                "closed_at": closed_at,
+                "status": status,
+                "id_repository": id_repository,
+                "id_resolution_commit": id_resolution_commit,
+                "resolution_time": resolution_time
             })
 
         if 'Link' in issue_pg.headers:
@@ -342,7 +346,27 @@ def closed_issues_of_repo(repo, owner, api):
 def load_issues_data(db):
     issues_data = open_issues_of_repo('DeepSpeed', 'microsoft', github_api) + closed_issues_of_repo('DeepSpeed', 'microsoft', github_api)
     for issue_data in issues_data:
+         # Usa la función de controlador para crear un nuevo user en la base de datos
+        user_data = {
+        "id_user": issue_data["id_user"],
+        "login_user": issue_data["login_user"],
+        "experience": None,
+        "id_repository": issue_data["id_repository"]
+        }
+        user = schemas.UserCreate(**user_data)
+        controllers.create_user(db, user)
         # Usa la función de controlador para crear un nuevo issue en la base de datos
+        issue_data = {
+            "id_issue": issue_data["id_issue"],
+            "name": issue_data["name"],
+            "created_at": issue_data["created_at"],
+            "closed_at": issue_data["closed_at"],
+            "status": issue_data["status"],
+            "id_user": issue_data["id_user"],
+            "id_repository": issue_data["id_repository"],
+            "id_resolution_commit": issue_data["id_resolution_commit"],
+            "resolution_time": issue_data["resolution_time"]
+        }
         issue = schemas.IssueCreate(**issue_data)
         controllers.create_issue(db, issue)
 
@@ -351,7 +375,7 @@ db = SessionLocal()
 load_repo_info_data(db)
 load_commits_data(db)
 load_pulls_data(db)
-#load_issues_data(db)
+load_issues_data(db)
 
 db.close()
 #Finish timestamp

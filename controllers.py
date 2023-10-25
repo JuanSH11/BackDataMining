@@ -104,7 +104,7 @@ def get_issues(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.Issue).offset(skip).limit(limit).all()
 
 def create_issue(db: Session, issue: schemas.IssueCreate):
-    db_issue = models.Issue(name_issue=issue.name_issue, created_at_issue=issue.created_at_issue, updated_at_issue=issue.updated_at_issue, resolution_time=issue.resolution_time, id_user=issue.id_user, id_resolution_commit=issue.id_resolution_commit, id_repository=issue.id_repository)
+    db_issue = models.Issue(id_issue=issue.id_issue, name=issue.name, created_at=issue.created_at, closed_at=issue.closed_at, resolution_time=issue.resolution_time, id_user=issue.id_user, id_resolution_commit=issue.id_resolution_commit, id_repository=issue.id_repository)
     db.add(db_issue)
     db.commit()
     db.refresh(db_issue)
