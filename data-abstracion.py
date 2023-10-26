@@ -100,6 +100,10 @@ def commits_of_repo(repo, owner, api):
 
 def load_commits_data(db):
     commits_data = commits_of_repo('DeepSpeed', 'microsoft', github_api)
+    
+    users_to_insert = []
+    commits_to_insert = []
+    
     for commit_data in commits_data:
         # Usa la función de controlador para crear un nuevo user en la base de datos
         user_data = {
@@ -108,8 +112,7 @@ def load_commits_data(db):
         "experience": None,
         "id_repository": commit_data["id_repository"]
         }
-        user = schemas.UserCreate(**user_data)
-        controllers.create_user(db, user)
+        users_to_insert.append(schemas.UserCreate(**user_data))
 
         # Usa la función de controlador para crear un nuevo commit en la base de datos
         commit_data = {
@@ -118,8 +121,15 @@ def load_commits_data(db):
         "id_user": commit_data["id_user"],
         "id_repository": commit_data["id_repository"]
         }
-        commit = schemas.CommitCreate(**commit_data)
-        controllers.create_commit(db, commit)
+        commits_to_insert.append(schemas.CommitCreate(**commit_data))
+
+    #Insert users in a batch
+    for users in users_to_insert:
+        controllers.create_user(db, users)
+    #Insert commits in a batch
+    for commits in commits_to_insert:
+        controllers.create_commit(db, commits)
+
 # commits = json_normalize(commits_of_repo('DeepSpeed', 'microsoft', github_api))
 # commits.to_csv('data/commits.csv')
 
@@ -217,6 +227,10 @@ def open_pulls_of_repo(repo, owner, api):
 
 def load_pulls_data(db):
     pulls_data = closed_pulls_of_repo('DeepSpeed', 'microsoft', github_api) + open_pulls_of_repo('DeepSpeed', 'microsoft', github_api)
+
+    pulls_to_insert = []
+    users_to_insert = []
+
     for pull_data in pulls_data:
         # Usa la función de controlador para crear un nuevo user en la base de datos
         user_data = {
@@ -225,8 +239,7 @@ def load_pulls_data(db):
         "experience": None,
         "id_repository": pull_data["id_repository"]
         }
-        user = schemas.UserCreate(**user_data)
-        controllers.create_user(db, user)
+        users_to_insert.append(schemas.UserCreate(**user_data))
         # Usa la función de controlador para crear un nuevo pull request en la base de datos
         pull_data = {
             "id_pull": pull_data["id_pull"],
@@ -238,8 +251,14 @@ def load_pulls_data(db):
             "id_repository": pull_data["id_repository"],
             "id_commit": pull_data["id_commit"]
         }
-        pull = schemas.PullRequestCreate(**pull_data)
-        controllers.create_pull_request(db, pull)
+        pulls_to_insert.append(schemas.PullRequestCreate(**pull_data))
+        
+    #Insert users in a batch
+    for users in users_to_insert:
+        controllers.create_user(db, users)
+    #Insert pulls in a batch
+    for pulls in pulls_to_insert:
+        controllers.create_pull_request(db, pulls)
             
 
 # Combine open_pulls and closed_pulls
@@ -345,6 +364,10 @@ def closed_issues_of_repo(repo, owner, api):
 
 def load_issues_data(db):
     issues_data = open_issues_of_repo('DeepSpeed', 'microsoft', github_api) + closed_issues_of_repo('DeepSpeed', 'microsoft', github_api)
+
+    issues_to_insert = []
+    users_to_insert = []
+
     for issue_data in issues_data:
          # Usa la función de controlador para crear un nuevo user en la base de datos
         user_data = {
@@ -353,8 +376,8 @@ def load_issues_data(db):
         "experience": None,
         "id_repository": issue_data["id_repository"]
         }
-        user = schemas.UserCreate(**user_data)
-        controllers.create_user(db, user)
+        users_to_insert.append(schemas.UserCreate(**user_data))
+        
         # Usa la función de controlador para crear un nuevo issue en la base de datos
         issue_data = {
             "id_issue": issue_data["id_issue"],
@@ -367,8 +390,15 @@ def load_issues_data(db):
             "id_resolution_commit": issue_data["id_resolution_commit"],
             "resolution_time": issue_data["resolution_time"]
         }
-        issue = schemas.IssueCreate(**issue_data)
-        controllers.create_issue(db, issue)
+        issues_to_insert.append(schemas.IssueCreate(**issue_data))
+
+    #Insert users in a batch
+    for users in users_to_insert:
+        controllers.create_user(db, users)
+    #Insert issues in a batch
+    for issues in issues_to_insert:
+        controllers.create_issue(db, issues)
+        
 
 
 db = SessionLocal()
