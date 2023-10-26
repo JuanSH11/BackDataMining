@@ -141,3 +141,53 @@ def get_issues_by_user_and_repository(db: Session, user_id: int, repository_id: 
 def get_commits_by_user_and_repository_and_date(db: Session, user_id: int, repository_id: int, date: datetime):
     return db.query(models.Commit).filter(models.Commit.id_user == user_id, models.Commit.id_repository == repository_id, models.Commit.created_at_commit >= date).all()
 
+# Define Experience for all the users
+def calculate_experience(db:Session):
+
+    # Obtenemos todos los usuarios
+    users = db.query(models.User).all()
+
+    # Iteramos sobre todos los usuarios
+    for user in users:
+        current_time = datetime.datetime.now()
+
+        # Obtenemos la fecha de su primer commit
+        first_commit = db.query(models.Commit).filter(models.Commit.id_user == user.id_user).order_by(models.Commit.created_at_commit).first()
+        if first_commit:
+            first_commit_date = first_commit.created_at_commit
+        else:
+            first_commit_date = current_time  # Si no tiene commits, usamos la fecha actual
+        
+        # Obtenemos la fecha de su primer pull request cerrado
+        first_pr = db.query(models.PullRequest).filter(models.PullRequest.id_user == user.id_user, models.PullRequest.status == 'closed').order_by(models.PullRequest.closed_at).first()
+        if first_pr:
+            first_pr_date = first_pr.closed_at
+        else:
+            first_pr_date = current_time  # Si no tiene pull requests cerrados, usamos la fecha actual
+        
+        # Obtenemos la fecha de su primer issue cerrado
+        first_issue = db.query(models.Issue).filter(models.Issue.id_user == user.id_user, models.Issue.closed_at.isnot(None)).order_by(models.Issue.closed_at).first()
+        if first_issue:
+            first_issue_date = first_issue.closed_at
+        else:
+            first_issue_date = current_time  # Si no tiene issues cerrados, usamos la fecha actual
+        
+        # Calculamos la diferencia en meses desde cada primera contribución hasta ahora
+        commit_experience = (current_time - first_commit_date).days // 30
+        pr_experience = (current_time - first_pr_date).days // 30
+        issue_experience = (current_time - first_issue_date).days // 30
+
+        # Calculamos la experiencia final tomando el mínimo de los tres
+        experience = min(commit_experience, pr_experience, issue_experience)
+
+        # Asignamos la categoría de experiencia según tus criterios
+        if experience <= 3:
+            experience_category = "onboarded"
+        elif 6 <= experience <= 12:
+            experience_category = "experienced"
+        else:
+            experience_category = "veteran"
+
+        # Actualizamos el campo 'experience' en la base de datos
+        user.experience = experience_category
+        db.commit() 

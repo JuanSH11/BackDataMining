@@ -376,6 +376,7 @@ load_repo_info_data(db)
 load_commits_data(db)
 load_pulls_data(db)
 load_issues_data(db)
+controllers.calculate_experience(db)   
 
 db.close()
 #Finish timestamp
