@@ -1,9 +1,13 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Request
+import httpx
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 import controllers, models, schemas
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
+import config
+
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -250,3 +254,74 @@ def read_commit_by_issue(issue_id: int, db: Session = Depends(get_db)):
     if db_issue is None:
         raise HTTPException(status_code=404, detail="Issue not found")
     return db_issue.resolution_commit
+
+# Ruta de autenticación
+@app.get("/login")
+async def login_with_github():
+    github_auth_url = "https://github.com/login/oauth/authorize?client_id=e9ebb07c3b330ccadf1c&scope=user"
+    return RedirectResponse(url=github_auth_url)
+
+# Define la URL de autorización y otros valores
+GITHUB_CLIENT_ID = "e9ebb07c3b330ccadf1c"
+GITHUB_CLIENT_SECRET = "31292aaab1032c10d9f6e8874c1e8764417bf844"
+GITHUB_REDIRECT_URI = "http://localhost:8000/callback"
+GITHUB_ACCESS_TOKEN_URL = "https://github.com/login/oauth/access_token"
+GITHUB_USER_INFO_URL = "https://api.github.com/user"
+
+@app.get("/callback")
+async def github_callback(request: Request):
+    # Obtiene el código de autorización de la URL de redirección
+    code = request.query_params.get("code")
+    
+    if not code:
+        raise HTTPException(status_code=400, detail="Código de autorización no encontrado")
+
+    # Configura los datos que se enviarán en la solicitud POST para obtener el token de acceso
+    data = {
+        "client_id": GITHUB_CLIENT_ID,
+        "client_secret": GITHUB_CLIENT_SECRET,
+        "code": code,
+        "redirect_uri": GITHUB_REDIRECT_URI,
+    }
+
+    # Realiza la solicitud POST a la URL de autorización de GitHub
+    async with httpx.AsyncClient() as client:
+        response = await client.post(GITHUB_ACCESS_TOKEN_URL, data=data)
+
+    if response.status_code != 200:
+        raise HTTPException(status_code=400, detail="No se pudo obtener el token de acceso")
+
+    # La respuesta de GitHub contendrá el token de acceso
+    token_data = response.text
+    access_token = token_data.split("&")[0].split("=")[1]
+
+    # Aquí puedes almacenar el token de acceso de manera segura, por ejemplo, en la base de datos o en una sesión
+    # Guardar token de acceso en el valor gh_token que esta en config.py
+    config.gh_token = access_token
+    print(config.gh_token)
+
+    # Guardar login del usuario en el valor gh_user que esta en config.py
+    async with httpx.AsyncClient() as client:
+        response = await client.get(GITHUB_USER_INFO_URL, headers={"Authorization": f"token {access_token}"})
+    user_data = response.json()
+    config.gh_user = user_data["login"]
+    print(config.gh_user)
+
+    # Redirigir a una página de éxito 
+    return RedirectResponse(url="/success")
+
+@app.get("/success")
+async def success_page():
+    return {"message": "Autorización exitosa. Puedes cerrar esta ventana."}
+
+
+def get_gh_token():
+    if config.gh_token:
+        return config.gh_token
+    else:
+        raise HTTPException(status_code=401, detail="No se ha autenticado con GitHub")
+
+@app.get("/ruta_protegida")
+async def ruta_protegida(token: str = Depends(get_gh_token)):
+    # Lógica de la ruta protegida
+    return {"message": "Ruta protegida. Acceso autorizado."}
