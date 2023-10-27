@@ -6,4 +6,4 @@ fastapi==0.62.0
 SQLAlchemy==1.4.49
 httpx
 aiofiles
-jinja2==2.11.3
+jinja2==3.0.3
