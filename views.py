@@ -7,7 +7,8 @@ import controllers, models, schemas
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
 import config
-
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -28,6 +29,11 @@ def get_db():
         yield db
     finally:
         db.close()
+
+# Assets como carpeta estática
+app.mount("/static", StaticFiles(directory="assets"), name="static")
+
+templates = Jinja2Templates(directory="templates")
 
 # Repositories functions
 @app.get("/repositories/", response_model=List[schemas.Repository])
@@ -255,9 +261,15 @@ def read_commit_by_issue(issue_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Issue not found")
     return db_issue.resolution_commit
 
-# Ruta de autenticación
+# Ruta de vista principal
 @app.get("/login")
-async def login_with_github():
+async def login(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+#Ruta de autenticacion
+@app.get("/github-login")
+async def github_login():
+    # Redirigir a la página de inicio de sesión de GitHub
     github_auth_url = "https://github.com/login/oauth/authorize?client_id=e9ebb07c3b330ccadf1c&scope=user"
     return RedirectResponse(url=github_auth_url)
 

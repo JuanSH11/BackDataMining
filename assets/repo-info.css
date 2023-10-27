@@ -1,0 +1,112 @@
+
+html {
+	font-size:62.5%;
+}
+* {
+	margin: 0;
+	padding: 0;
+}
+ul, li {
+	list-style: none;
+}
+input {
+	border: none;
+}
+body {
+  width: 144rem;
+}.repo-info-GcA {
+  box-sizing: border-box;
+  padding: 2.9rem 8.7rem 15.3rem 5.1rem;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-image: url('../assets/fondo-1-bg-nSe.png');
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.repo-info-GcA .your-logo-z2N {
+  margin-bottom: 16rem;
+  font-size: 2rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #000000;
+  font-family: Poppins, 'Source Sans Pro';
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.repo-info-GcA .group-61-gft {
+  margin-left: 77.9rem;
+  box-sizing: border-box;
+  padding: 10.1rem 4.7rem 6.35rem 2.5rem;
+  width: 52.3rem;
+  background-color: rgba(99, 94, 94, 0.8500000238);
+  border-radius: 4rem;
+  flex-shrink: 0;
+}
+.repo-info-GcA .group-61-gft .repository-owner-c3k {
+  margin-bottom: 0.9rem;
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #ffffff;
+  font-family: Poppins, 'Source Sans Pro';
+  white-space: nowrap;
+}
+.repo-info-GcA .group-61-gft .auto-group-yxea-wLv {
+  margin-bottom: 4.9rem;
+  box-sizing: border-box;
+  padding: 1.9rem 2.5rem 1.7rem 2.5rem;
+  width: 100%;
+  font-size: 1.4rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: #7f7f7f;
+  font-family: Poppins, 'Source Sans Pro';
+  white-space: nowrap;
+  border: solid 0.1rem #4285f4;
+  background-color: #ffffff;
+  border-radius: 0.9rem;
+}
+.repo-info-GcA .group-61-gft .repository-name-n6e {
+  margin-bottom: 0.9rem;
+  font-size: 2rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #ffffff;
+  font-family: Poppins, 'Source Sans Pro';
+  white-space: nowrap;
+}
+.repo-info-GcA .group-61-gft .auto-group-qbzi-7uc {
+  margin-bottom: 6.85rem;
+  box-sizing: border-box;
+  padding: 1.9rem 2.5rem 1.7rem 2.5rem;
+  width: 100%;
+  font-size: 1.4rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: #7f7f7f;
+  font-family: Poppins, 'Source Sans Pro';
+  white-space: nowrap;
+  border: solid 0.1rem #adadad;
+  background-color: #ffffff;
+  border-radius: 0.9rem;
+}
+.repo-info-GcA .group-61-gft .auto-group-umdc-bZt {
+  margin: 0rem 11.1rem 0rem 10.4rem;
+  box-sizing: border-box;
+  padding: 0.55rem 9rem 0.05rem 7.8rem;
+  width: calc(100% - 21.5rem);
+  font-size: 3.2rem;
+  font-weight: 300;
+  line-height: 1.5;
+  color: #ffffff;
+  font-family: Poppins, 'Source Sans Pro';
+  white-space: nowrap;
+  box-shadow: 0 0.4rem 1.9rem rgba(119, 147, 65, 0.3000000119);
+  background-color: #46627c;
+  border-radius: 1rem;
+}
