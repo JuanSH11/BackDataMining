@@ -93,7 +93,6 @@ body {
   position: relative;
   background-size: 106% 100%;
   background-position: 0 0;
-  background-image: url('../assets/logo-github-1.png');
   border-radius: 1.7rem;
   flex-shrink: 0;
 }
