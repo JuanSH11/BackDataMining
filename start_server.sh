@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+# Comandos SQL para reiniciar el esquema de la base de datos
+echo "Eliminando squema public..."
+psql -U postgres -d datamining_db -a -f reset_schema.sql
+
 # Eliminar config.json si existe
 if [ -f config.json ]; then
     echo "Eliminando config.json..."
