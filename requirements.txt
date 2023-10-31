@@ -7,3 +7,5 @@ SQLAlchemy==1.4.49
 httpx
 aiofiles
 jinja2==3.0.3
+
+#pydantic== v1.10.0a1
