@@ -6,4 +6,4 @@ __pycache__/database.cpython-39.pyc
 __pycache__/schemas.cpython-39.pyc
 __pycache__/views.cpython-39.pyc
 
-config.py
+config.json
