@@ -6,14 +6,13 @@ from database import SessionLocal, engine
 import controllers, models, schemas
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-import config
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import json
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(root_path="/login")
 
 app.add_middleware(
     CORSMiddleware,
@@ -264,7 +263,7 @@ def read_commit_by_issue(issue_id: int, db: Session = Depends(get_db)):
     return db_issue.resolution_commit
 
 # Ruta de vista principal
-@app.get("/login")
+@app.get("/")
 async def login(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
@@ -329,8 +328,14 @@ async def success_page():
 
 
 def get_gh_token():
-    if config.gh_token:
-        return config.gh_token
+    # Get credentials
+    with open('config.json', 'r') as file:
+        token_data = json.load(file)
+
+    gh_token = token_data['gh_token']
+
+    if gh_token:
+        return gh_token
     else:
         raise HTTPException(status_code=401, detail="No se ha autenticado con GitHub")
 
