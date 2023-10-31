@@ -5,22 +5,28 @@ import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine, engine, text, types, MetaData, Table, String
 from datetime import datetime
-import config
-import os
 from database import SessionLocal 
 import schemas
 import controllers
-
-
+import json
 
 
 # API URL
 github_api = "https://api.github.com"
 github_repo = ""
 
+# Get credentials
+with open('config.json', 'r') as file:
+    token_data = json.load(file)
+
+gh_user = token_data['gh_user']
+gh_token = token_data['gh_token']
+
+
 # Create a session
 github_session = requests.Session()
-github_session.auth = (config.gh_user, config.gh_token)
+print(gh_user, gh_token)
+github_session.auth = (gh_user, gh_token)
 
 # Start Timestamp
 start_time = datetime.now()

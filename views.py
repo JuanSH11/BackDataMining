@@ -9,6 +9,7 @@ from typing import List
 import config
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+import json
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -29,6 +30,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 # Assets como carpeta estática
 app.mount("/static", StaticFiles(directory="assets"), name="static")
@@ -307,17 +309,16 @@ async def github_callback(request: Request):
     token_data = response.text
     access_token = token_data.split("&")[0].split("=")[1]
 
-    # Aquí puedes almacenar el token de acceso de manera segura, por ejemplo, en la base de datos o en una sesión
-    # Guardar token de acceso en el valor gh_token que esta en config.py
-    config.gh_token = access_token
-    print(config.gh_token)
-
-    # Guardar login del usuario en el valor gh_user que esta en config.py
+    # Guardar login del usuario
     async with httpx.AsyncClient() as client:
         response = await client.get(GITHUB_USER_INFO_URL, headers={"Authorization": f"token {access_token}"})
     user_data = response.json()
-    config.gh_user = user_data["login"]
-    print(config.gh_user)
+
+    # Guardar login y token del usuario 
+    token_data = {"gh_user": user_data["login"], "gh_token": access_token}
+
+    with open("config.json", "w") as json_file:
+        json.dump(token_data, json_file)
 
     # Redirigir a una página de éxito 
     return RedirectResponse(url="/success")
