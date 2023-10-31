@@ -2,7 +2,7 @@
 
 
 # Comandos SQL para reiniciar el esquema de la base de datos
-echo "Eliminando squema public..."
+echo "Eliminando schema public..."
 psql -U postgres -d datamining_db -a -f reset_schema.sql
 
 # Eliminar config.json si existe
