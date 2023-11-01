@@ -21,6 +21,8 @@ with open('config.json', 'r') as file:
 
 gh_user = token_data['gh_user']
 gh_token = token_data['gh_token']
+repoOwner = token_data['owner']
+repoName = token_data['name']
 
 
 # Create a session
@@ -51,7 +53,7 @@ def repo_info(repo, owner, api):
     return repo_info_data
 
 def load_repo_info_data(db):
-    repo_info_data = repo_info('DeepSpeed', 'microsoft', github_api)
+    repo_info_data = repo_info(repoName, repoOwner, github_api)
     # Usar la función de controlador para crear un nuevo registro de repositorio en la base de datos
     repo = schemas.RepositoryCreate(**repo_info_data)
     controllers.create_repository(db, repo)
