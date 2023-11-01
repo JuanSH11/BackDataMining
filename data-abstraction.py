@@ -62,7 +62,7 @@ def load_repo_info_data(db):
 # repos.to_csv('data/repos.csv', sep=';')
 
 # Id of the repository
-id_general_repo = repo_info('DeepSpeed', 'microsoft', github_api)["id_repository"]
+id_general_repo = repo_info(repoName, repoOwner, github_api)["id_repository"]
 print(id_general_repo)
 
 # Get the commits
