@@ -16,7 +16,16 @@ echo "Iniciando el servidor..."
 uvicorn main:app --reload &
 
 # Esperar hasta que config.json exista
-while [ ! -f config.json ]; do
+while true; do
+    if [ -f config.json ]; then
+        if [ -n "$(cat config.json | grep 'gh_user')" ] && \
+           [ -n "$(cat config.json | grep 'gh_token')" ] && \
+           [ -n "$(cat config.json | grep 'owner')" ] && \
+           [ -n "$(cat config.json | grep 'name')" ]; then
+            break
+        fi
+    fi
+    
     if [ "$(uname)" == "Darwin" ]; then
         # macOS (no es necesario el comando timeout)
         sleep 1
