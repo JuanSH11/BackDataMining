@@ -13,20 +13,22 @@ input {
 	border: none;
 }
 body {
-  width: 144rem;
-}.repo-info-GcA {
+  width: 100%;
+}
+.repo-info-GcA {
   box-sizing: border-box;
   padding: 2.9rem 8.7rem 15.3rem 5.1rem;
   width: 100%;
-  overflow: hidden;
+  height: 100%;
   position: relative;
   display: flex;
   flex-direction: column;
-  background-size: 100% 100%;
+  background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
-  background-image: url('../assets/fondo-1-bg-nSe.png');
+  background-image: url('/static/fondo-1-bg.png');
   background-color: rgba(255, 255, 255, 0.5);
+  overflow: hidden;
 }
 .repo-info-GcA .your-logo-z2N {
   margin-bottom: 16rem;
@@ -39,7 +41,7 @@ body {
   flex-shrink: 0;
 }
 .repo-info-GcA .group-61-gft {
-  margin-left: 77.9rem;
+  margin: 0;
   box-sizing: border-box;
   padding: 10.1rem 4.7rem 6.35rem 2.5rem;
   width: 52.3rem;

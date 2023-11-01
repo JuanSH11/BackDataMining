@@ -1,3 +1,4 @@
+import os
 from fastapi import Depends, FastAPI, HTTPException, Request
 import httpx
 from fastapi.responses import RedirectResponse
@@ -320,11 +321,43 @@ async def github_callback(request: Request):
         json.dump(token_data, json_file)
 
     # Redirigir a una página de éxito 
-    return RedirectResponse(url="/success")
+    return RedirectResponse(url="/repo-info")
 
-@app.get("/success")
-async def success_page():
-    return {"message": "Autorización exitosa. Puedes cerrar esta ventana."}
+@app.post("/success")
+async def form_data(request: Request):
+    form = await request.form()
+    owner = form["owner"]
+    name = form["name"]
+
+    print(owner)
+
+
+    # Verificar que los campos "owner" y "name" no estén vacíos 
+    if owner.strip() != "" and name.strip() != "":
+        # Los campos son válidos, proceder a guardarlos en un archivo JSON (puedes utilizar el código que mencionaste antes)
+        # Leer el archivo JSON existente, si lo hay
+        existing_data = {}
+        if os.path.isfile("config.json"):
+            with open("config.json", "r") as json_file:
+                existing_data = json.load(json_file)
+
+        # Agregar los nuevos datos
+        existing_data["owner"] = owner
+        existing_data["name"] = name
+
+        # Guardar el archivo JSON con los datos existentes y nuevos
+        with open("config.json", "w") as json_file:
+            json.dump(existing_data, json_file)
+        print(existing_data)
+        return {"message": "Descargando datos"}
+    else:
+        raise HTTPException(status_code=400, detail="Los campos 'owner' y 'name' son inválidos")
+
+
+# Ruta de vista formulario
+@app.get("/repo-info")
+async def form(request: Request):
+    return templates.TemplateResponse("repo-info.html", {"request": request})
 
 
 def get_gh_token():
