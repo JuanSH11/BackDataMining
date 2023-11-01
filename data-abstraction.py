@@ -58,7 +58,7 @@ def load_repo_info_data(db):
     repo = schemas.RepositoryCreate(**repo_info_data)
     controllers.create_repository(db, repo)
 
-# repos = json_normalize(repo_info('DeepSpeed', 'microsoft', github_api))
+# repos = json_normalize(repo_info(repoName, repoOwner, github_api))
 # repos.to_csv('data/repos.csv', sep=';')
 
 # Id of the repository
@@ -107,7 +107,7 @@ def commits_of_repo(repo, owner, api):
     return commits
 
 def load_commits_data(db):
-    commits_data = commits_of_repo('DeepSpeed', 'microsoft', github_api)
+    commits_data = commits_of_repo(repoName, repoOwner, github_api)
     
     users_to_insert = []
     commits_to_insert = []
@@ -138,7 +138,7 @@ def load_commits_data(db):
     for commits in commits_to_insert:
         controllers.create_commit(db, commits)
 
-# commits = json_normalize(commits_of_repo('DeepSpeed', 'microsoft', github_api))
+# commits = json_normalize(commits_of_repo(repoName, repoOwner, github_api))
 # commits.to_csv('data/commits.csv')
 
 # Get the closed pulls
@@ -234,7 +234,7 @@ def open_pulls_of_repo(repo, owner, api):
     return open_pulls
 
 def load_pulls_data(db):
-    pulls_data = closed_pulls_of_repo('DeepSpeed', 'microsoft', github_api) + open_pulls_of_repo('DeepSpeed', 'microsoft', github_api)
+    pulls_data = closed_pulls_of_repo(repoName, repoOwner, github_api) + open_pulls_of_repo(repoName, repoOwner, github_api)
 
     pulls_to_insert = []
     users_to_insert = []
@@ -270,7 +270,7 @@ def load_pulls_data(db):
             
 
 # Combine open_pulls and closed_pulls
-# pulls = json_normalize( closed_pulls_of_repo('DeepSpeed', 'microsoft', github_api) + open_pulls_of_repo('DeepSpeed', 'microsoft', github_api))
+# pulls = json_normalize( closed_pulls_of_repo(repoName, repoOwner, github_api) + open_pulls_of_repo(repoName, repoOwner, github_api))
 # pulls.to_csv('data/pulls.csv')
 
 
@@ -371,7 +371,7 @@ def closed_issues_of_repo(repo, owner, api):
     return closed_issues
 
 def load_issues_data(db):
-    issues_data = open_issues_of_repo('DeepSpeed', 'microsoft', github_api) + closed_issues_of_repo('DeepSpeed', 'microsoft', github_api)
+    issues_data = open_issues_of_repo(repoName, repoOwner, github_api) + closed_issues_of_repo(repoName, repoOwner, github_api)
 
     issues_to_insert = []
     users_to_insert = []
