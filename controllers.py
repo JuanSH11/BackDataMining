@@ -177,8 +177,8 @@ def calculate_experience(db:Session):
         pr_experience = (current_time - first_pr_date).days // 30
         issue_experience = (current_time - first_issue_date).days // 30
 
-        # Calculamos la experiencia final tomando el mínimo de los tres
-        experience = min(commit_experience, pr_experience, issue_experience)
+        # Calculamos la experiencia final tomando el maximo de los tres
+        experience = max(commit_experience, pr_experience, issue_experience)
 
         # Asignamos la categoría de experiencia según tus criterios
         if experience <= 3:
