@@ -84,3 +84,10 @@ user_pull_request_association = Table('user_pull_request_association', Base.meta
     Column('user_id', String, ForeignKey('users.id_user')),
     Column('pull_request_id', String, ForeignKey('pull_requests.id_pull'))
 )
+
+class Progress(Base):
+    __tablename__ = 'progress'
+
+    id_progress = Column(Integer, primary_key=True, index=True)
+    message = Column(String, index=True)
+    percentage = Column(Integer)

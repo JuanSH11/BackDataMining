@@ -191,3 +191,29 @@ def calculate_experience(db:Session):
         # Actualizamos el campo 'experience' en la base de datos
         user.experience = experience_category
         db.commit() 
+
+# Define progreso de carga de datos
+def insert_progress(db: Session, message: str, percentage: int = None):
+    progress = models.Progress(message=message, percentage=percentage)
+    db.add(progress)
+    db.commit()
+    db.refresh(progress)
+    return progress
+
+# Actualizar progreso de carga de datos
+def update_progress(db: Session, progress_id: int, message: str = None, percentage: int = None):
+    progress = db.query(models.Progress).filter(models.Progress.id_progress == progress_id).first()
+    if progress:
+        progress.message = message
+        progress.percentage = percentage
+        # if message:
+        #     progress.message = message
+        # if percentage:
+        #     progress.percentage = percentage
+        db.commit()
+        db.refresh(progress)
+    return progress
+
+# Obtener progreso de carga de datos
+def get_latest_progress(db: Session):
+    return db.query(models.Progress).order_by(models.Progress.id_progress.desc()).first()

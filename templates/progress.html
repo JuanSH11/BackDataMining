@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Progreso de Descarga</title>
+    <style>
+        #progress-bar-container {
+            width: 50%;
+            margin: auto;
+            padding: 20px;
+        }
+
+        #progress-bar {
+            height: 30px;
+            background-color: #ddd;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <h2>Progreso de Descarga</h2>
+    <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            var progressBar = $("#progress-bar");
+
+            function updateProgressBar() {
+                $.get("/get-progress", function(data) {
+                    progressBar.css("width", data.progress + "%");
+                    // Si el progreso no ha llegado al 100%, sigue actualizando
+                    if (data.progress < 100) {
+                        setTimeout(updateProgressBar, 1000);
+                    }
+                });
+            }
+
+            // Comienza la actualización de la barra de progreso al cargar la página
+            updateProgressBar();
+        });
+    </script>
+</body>
+</html>
