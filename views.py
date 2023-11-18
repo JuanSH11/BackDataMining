@@ -349,7 +349,7 @@ async def form_data(request: Request):
         with open("config.json", "w") as json_file:
             json.dump(existing_data, json_file)
         print(existing_data)
-        return RedirectResponse(url="/progress")
+        return RedirectResponse(url="/progress", status_code=302)
     else:
         raise HTTPException(status_code=400, detail="Los campos 'owner' y 'name' son inválidos")
 
@@ -377,12 +377,12 @@ async def ruta_protegida(token: str = Depends(get_gh_token)):
     # Lógica de la ruta protegida
     return {"message": "Ruta protegida. Acceso autorizado."}
 
-@app.post("/progress")
+@app.get("/progress")
 async def progress(request: Request):
     return templates.TemplateResponse("progress.html", {"request": request})
 
 @app.get("/get-progress")
 async def get_progress(db: Session = Depends(get_db)):
     progress = controllers.get_latest_progress(db)
-    return {"progress": progress.percentage}
+    return {"progress": progress.percentage, "message": progress.message}
 

@@ -7,6 +7,7 @@
             width: 50%;
             margin: auto;
             padding: 20px;
+            text-align: center;
         }
 
         #progress-bar {
@@ -15,21 +16,35 @@
             width: 0%;
             transition: width 0.3s ease;
         }
+        #progress-message {
+        margin-top: 10px;
+        color: #333;  /* Color del mensaje */
+        }
+        #progress-percentage {
+            color: #333;  /* Color del porcentaje */
+        }
     </style>
 </head>
 <body>
     <h2>Progreso de Descarga</h2>
     <div id="progress-bar-container">
         <div id="progress-bar"></div>
+        <div id="progress-message"></div>
+        <div id="progress-percentage"></div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
         $(document).ready(function() {
             var progressBar = $("#progress-bar");
+            var progressMessage = $("#progress-message");
+            var progressPercentage = $("#progress-percentage");
 
             function updateProgressBar() {
                 $.get("/get-progress", function(data) {
+                    console.log(" data recibida:", data);
                     progressBar.css("width", data.progress + "%");
+                    progressPercentage.text(data.progress + "%");
+                    progressMessage.text(data.message);
                     // Si el progreso no ha llegado al 100%, sigue actualizando
                     if (data.progress < 100) {
                         setTimeout(updateProgressBar, 1000);
