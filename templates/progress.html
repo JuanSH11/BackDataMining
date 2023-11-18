@@ -32,12 +32,16 @@
         <div id="progress-message"></div>
         <div id="progress-percentage"></div>
     </div>
+    
+    <button id="new-analysis-btn" style="display: none;" onclick="window.location.href='/repo-info'">New Analysis</button>
+
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script>
         $(document).ready(function() {
             var progressBar = $("#progress-bar");
             var progressMessage = $("#progress-message");
             var progressPercentage = $("#progress-percentage");
+            var newAnalysisBtn = $("#new-analysis-btn");
 
             function updateProgressBar() {
                 $.get("/get-progress", function(data) {
@@ -48,6 +52,9 @@
                     // Si el progreso no ha llegado al 100%, sigue actualizando
                     if (data.progress < 100) {
                         setTimeout(updateProgressBar, 1000);
+                    } else {
+                        // Si el progreso llegó al 100%, muestra el botón para iniciar un nuevo análisis
+                        newAnalysisBtn.show();
                     }
                 });
             }
