@@ -216,4 +216,4 @@ def update_progress(db: Session, progress_id: int, message: str = None, percenta
 
 # Obtener progreso de carga de datos
 def get_latest_progress(db: Session):
-    return db.query(models.Progress).order_by(models.Progress.id_progress.desc()).first() or models.Progress(percentage=0, message="No hay progreso disponible")
+    return db.query(models.Progress).order_by(models.Progress.id_progress.desc()).first() or models.Progress(percentage=0, message="Iniciando descarga de datos del repositorio...")

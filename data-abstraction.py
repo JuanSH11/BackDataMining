@@ -414,7 +414,7 @@ def load_issues_data(db):
     for issues in issues_to_insert:
         controllers.create_issue(db, issues)
 
-    controllers.update_progress(db, progress.id_progress, "Issues del repositorio obtenidos", percentage=100) 
+    controllers.update_progress(db, progress.id_progress, "Descarga de datos completada", percentage=100) 
 
 
 db = SessionLocal()
