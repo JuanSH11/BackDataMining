@@ -1,4 +1,5 @@
 import os
+import subprocess
 from fastapi import Depends, FastAPI, HTTPException, Request
 import httpx
 from fastapi.responses import RedirectResponse
@@ -36,6 +37,16 @@ def get_db():
 app.mount("/static", StaticFiles(directory="assets"), name="static")
 
 templates = Jinja2Templates(directory="templates")
+
+# New Analysis
+class AnalysisState:
+    def __init__(self):
+        self.is_new_analysis = False
+
+analysis_state = AnalysisState()
+
+def get_analysis_state() -> AnalysisState:
+    return analysis_state
 
 # Repositories functions
 @app.get("/repositories/", response_model=List[schemas.Repository])
@@ -324,7 +335,7 @@ async def github_callback(request: Request):
     return RedirectResponse(url="/repo-info")
 
 @app.post("/success")
-async def form_data(request: Request):
+async def form_data(request: Request, db: Session = Depends(get_db), analysis_state: AnalysisState = Depends(get_analysis_state)):
     form = await request.form()
     owner = form["owner"]
     name = form["name"]
@@ -340,6 +351,16 @@ async def form_data(request: Request):
         if os.path.isfile("config.json"):
             with open("config.json", "r") as json_file:
                 existing_data = json.load(json_file)
+
+        if analysis_state.is_new_analysis:
+            # Eliminar los datos existentes de la base de datos, al realizar nuevo intento
+            controllers.delete_all_data(db)
+            # Ejecutar descarga de datos
+            try: 
+                subprocess.run(["python", "data-abstraction.py"])
+            except:
+                raise HTTPException(status_code=500, detail="Error al descargar los datos")
+
 
         # Agregar los nuevos datos
         existing_data["owner"] = owner

@@ -217,3 +217,18 @@ def update_progress(db: Session, progress_id: int, message: str = None, percenta
 # Obtener progreso de carga de datos
 def get_latest_progress(db: Session):
     return db.query(models.Progress).order_by(models.Progress.id_progress.desc()).first() or models.Progress(percentage=0, message="Iniciando descarga de datos del repositorio...")
+
+# Borra todos los datos de la base de datos
+def delete_all_data(db: Session):
+
+    # Borra todos los datos de las tablas
+    for table in reversed(models.Base.metadata.sorted_tables):
+        db.execute(table.delete())
+
+    # # Borra todos los datos de las tablas
+    # models.Base.metadata.drop_all(bind=db.bind)
+
+    # # Crea todas las tablas de la base de datos
+    # models.Base.metadata.create_all(bind=db.bind)
+
+    db.commit()
