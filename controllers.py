@@ -222,13 +222,19 @@ def get_latest_progress(db: Session):
 def delete_all_data(db: Session):
 
     # Borra todos los datos de las tablas
-    for table in reversed(models.Base.metadata.sorted_tables):
-        db.execute(table.delete())
+    # for table in reversed(models.Base.metadata.sorted_tables):
+    #     db.execute(table.delete())
 
-    # # Borra todos los datos de las tablas
-    # models.Base.metadata.drop_all(bind=db.bind)
+    try:
+        print("Deleting all data...")
+        # Borra todos los datos de las tablas
+        models.Base.metadata.drop_all(bind=db.bind)
 
-    # # Crea todas las tablas de la base de datos
-    # models.Base.metadata.create_all(bind=db.bind)
-
-    db.commit()
+        # Crea todas las tablas de la base de datos
+        models.Base.metadata.create_all(bind=db.bind)
+        db.commit()
+    except Exception as e:
+        print(e)
+        db.rollback()
+        raise
+    

@@ -1,6 +1,9 @@
+import asyncio
 import os
 import subprocess
+import threading
 from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi.param_functions import Form
 import httpx
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
@@ -11,6 +14,7 @@ from typing import List
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import json
+from fastapi import BackgroundTasks
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -334,14 +338,23 @@ async def github_callback(request: Request):
     # Redirigir a una página de éxito 
     return RedirectResponse(url="/repo-info")
 
+def run_data_abstraction():
+    try:
+        subprocess.run(["python", "data-abstraction.py"], check=True)
+    except subprocess.CalledProcessError as e:
+        raise HTTPException(status_code=500, detail=f"Error al descargar los datos: {e}")
+
+
+
 @app.post("/success")
-async def form_data(request: Request, db: Session = Depends(get_db), analysis_state: AnalysisState = Depends(get_analysis_state)):
+async def form_data(
+    request: Request,
+    db: Session = Depends(get_db),
+    new_analysis: bool = Form(...),
+):
     form = await request.form()
     owner = form["owner"]
     name = form["name"]
-
-    print(owner)
-
 
     # Verificar que los campos "owner" y "name" no estén vacíos 
     if owner.strip() != "" and name.strip() != "":
@@ -352,16 +365,6 @@ async def form_data(request: Request, db: Session = Depends(get_db), analysis_st
             with open("config.json", "r") as json_file:
                 existing_data = json.load(json_file)
 
-        if analysis_state.is_new_analysis:
-            # Eliminar los datos existentes de la base de datos, al realizar nuevo intento
-            controllers.delete_all_data(db)
-            # Ejecutar descarga de datos
-            try: 
-                subprocess.run(["python", "data-abstraction.py"])
-            except:
-                raise HTTPException(status_code=500, detail="Error al descargar los datos")
-
-
         # Agregar los nuevos datos
         existing_data["owner"] = owner
         existing_data["name"] = name
@@ -369,16 +372,31 @@ async def form_data(request: Request, db: Session = Depends(get_db), analysis_st
         # Guardar el archivo JSON con los datos existentes y nuevos
         with open("config.json", "w") as json_file:
             json.dump(existing_data, json_file)
-        print(existing_data)
+            
+        print(analysis_state.is_new_analysis)
+        if analysis_state.is_new_analysis:
+            print("Starting new analysis...")
+            # Eliminar los datos existentes de la base de datos, al realizar nuevo intento
+            controllers.delete_all_data(db)
+            analysis_state.is_new_analysis = False
+
+            # Ejecutar el script de descarga de datos en segundo plano
+            # background_tasks.add_task(run_data_abstraction())
+            # Ejecutar "data-abstraction.py" en un hilo separado utilizando asyncio
+            loop = asyncio.get_event_loop()
+            loop.run_in_executor(None, run_data_abstraction)
+
         return RedirectResponse(url="/progress", status_code=302)
+    
     else:
         raise HTTPException(status_code=400, detail="Los campos 'owner' y 'name' son inválidos")
 
 
 # Ruta de vista formulario
 @app.get("/repo-info")
-async def form(request: Request):
-    return templates.TemplateResponse("repo-info.html", {"request": request})
+async def form(request: Request, new_analysis: bool = False):
+    analysis_state.is_new_analysis = new_analysis
+    return templates.TemplateResponse("repo-info.html", {"request": request, "new_analysis": new_analysis})
 
 
 def get_gh_token():
@@ -407,3 +425,12 @@ async def get_progress(db: Session = Depends(get_db)):
     progress = controllers.get_latest_progress(db)
     return {"progress": progress.percentage, "message": progress.message}
 
+# # Descargar datos nuevo analisis
+# async def run_data_abstraction():
+#     try: 
+#         print("Running data abstraction script...")
+#         subprocess.run(["python", "data-abstraction.py"])
+#         print("Data abstraction script executed successfully.")
+#     except Exception as e:
+#         print(f"Error during data abstraction script execution: {e}")
+#         raise HTTPException(status_code=500, detail="Error al descargar los datos")
