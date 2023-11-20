@@ -53,12 +53,12 @@ def repo_info(repo, owner, api):
     return repo_info_data
 
 def load_repo_info_data(db):
-    progress = controllers.insert_progress(db, "Obteniendo información del repositorio", percentage=0)
+    progress = controllers.insert_progress(db, "Retrieving repository information...", percentage=0)
     repo_info_data = repo_info(repoName, repoOwner, github_api)
     # Usar la función de controlador para crear un nuevo registro de repositorio en la base de datos
     repo = schemas.RepositoryCreate(**repo_info_data)
     controllers.create_repository(db, repo)
-    controllers.update_progress(db, progress.id_progress, "Informacion del repositorio obtenida", percentage=5)
+    controllers.update_progress(db, progress.id_progress, "Repository information retrieved", percentage=5)
 # repos = json_normalize(repo_info(repoName, repoOwner, github_api))
 # repos.to_csv('data/repos.csv', sep=';')
 
@@ -108,7 +108,7 @@ def commits_of_repo(repo, owner, api):
     return commits
 
 def load_commits_data(db):
-    progress = controllers.insert_progress(db, "Obteniendo commits del repositorio", percentage=5)
+    progress = controllers.insert_progress(db, "Retrieving commits from the repository...", percentage=5)
     commits_data = commits_of_repo(repoName, repoOwner, github_api)
     
     users_to_insert = []
@@ -139,7 +139,7 @@ def load_commits_data(db):
     #Insert commits in a batch
     for commits in commits_to_insert:
         controllers.create_commit(db, commits)
-    controllers.update_progress(db, progress.id_progress, "Commits del repositorio obtenidos", percentage=35)
+    controllers.update_progress(db, progress.id_progress, "Commits from the repository retrieved", percentage=35)
 
 
 # commits = json_normalize(commits_of_repo(repoName, repoOwner, github_api))
@@ -238,7 +238,7 @@ def open_pulls_of_repo(repo, owner, api):
     return open_pulls
 
 def load_pulls_data(db):
-    progress = controllers.insert_progress(db, "Obteniendo pull requests del repositorio", percentage=35)
+    progress = controllers.insert_progress(db, "Retrieving pull requests from the repository...", percentage=35)
     pulls_data = closed_pulls_of_repo(repoName, repoOwner, github_api) + open_pulls_of_repo(repoName, repoOwner, github_api)
 
     pulls_to_insert = []
@@ -273,7 +273,7 @@ def load_pulls_data(db):
     for pulls in pulls_to_insert:
         controllers.create_pull_request(db, pulls)
 
-    controllers.update_progress(db, progress.id_progress, "Pull requests del repositorio obtenidos", percentage=70)        
+    controllers.update_progress(db, progress.id_progress, "Pull requests from the repository retrieved", percentage=70)        
 
 # Combine open_pulls and closed_pulls
 # pulls = json_normalize( closed_pulls_of_repo(repoName, repoOwner, github_api) + open_pulls_of_repo(repoName, repoOwner, github_api))
@@ -377,7 +377,7 @@ def closed_issues_of_repo(repo, owner, api):
     return closed_issues
 
 def load_issues_data(db):
-    progress = controllers.insert_progress(db, "Obteniendo issues del repositorio", percentage=70)
+    progress = controllers.insert_progress(db, "Retrieving issues from the repository...", percentage=70)
     issues_data = open_issues_of_repo(repoName, repoOwner, github_api) + closed_issues_of_repo(repoName, repoOwner, github_api)
 
     issues_to_insert = []
@@ -414,7 +414,7 @@ def load_issues_data(db):
     for issues in issues_to_insert:
         controllers.create_issue(db, issues)
 
-    controllers.update_progress(db, progress.id_progress, "Descarga de datos completada", percentage=100) 
+    controllers.update_progress(db, progress.id_progress, "Data download completed", percentage=100) 
 
 
 db = SessionLocal()
