@@ -65,3 +65,7 @@ body {
     font-weight: bold;
     font-family: Poppins, 'Source Sans Pro';
 }
+
+#new-analysis-btn:hover {
+    background-color: #236794;
+}

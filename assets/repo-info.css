@@ -65,3 +65,7 @@ button {
   font-weight: bold;
   font-family: Poppins, 'Source Sans Pro';
 }
+
+button:hover {
+  background-color: #236794;
+}
