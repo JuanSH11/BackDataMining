@@ -14,7 +14,7 @@ body {
   padding: 20px;
   text-align: center;
   background-color: rgba(99, 94, 94, 0.85);
-  border-radius: 8px;
+  border-radius: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   margin-top: 50px;
 }
