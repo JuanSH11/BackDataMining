@@ -353,8 +353,14 @@ async def form_data(
     new_analysis: bool = Form(...),
 ):
     form = await request.form()
-    owner = form["owner"]
-    name = form["name"]
+
+    repo_url = form["repo_url"]
+
+    # Obtener owner y name de la URL del repositorio
+    owner = repo_url.split("/")[-2]
+    temp_name = repo_url.split("/")[-1]
+    name = temp_name.split(".")[0]
+
 
     # Verificar que los campos "owner" y "name" no estén vacíos 
     if owner.strip() != "" and name.strip() != "":

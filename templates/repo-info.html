@@ -1,33 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <link rel="icon" href="/favicon.ico" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
-  <title>Repository info</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins%3A300%2C400%2C600"/>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro%3A300%2C400%2C600"/>
-  <link rel="stylesheet" type="text/css" href="/static/repo-info.css"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Repository Info</title>
+    <link rel="stylesheet" type="text/css" href="/static/repo-info.css"/>
 </head>
 <body>
-<div class="repo-info-GcA">
-  <p class="your-logo-z2N">GITSIGHT PRO</p>
-  <form action="/success" method="post">
-    <div class="group-61-gft">
-        <p class="instructions">Please make sure to respect the capitalization of the data</p>
-        <p class="repository-owner-c3k">Repository Owner</p>
-        <div class="auto-group-yxea-wLv">
-            <input type="text" id="owner" name="owner" placeholder="Owner">
-        </div>
-        <p class="repository-name-n6e">Repository Name</p>
-        <div class="auto-group-qbzi-7uc">
-            <input type="text" id="name" name="name" placeholder="Name">
-        </div>
-        <input type="hidden" name="new_analysis" value="{{ new_analysis }}">
-        <button type="submit" class="auto-group-umdc-bZt">Next</button>
+    <div id="gitsight-pro-title">GITSIGHT PRO</div>
+    <div id="repo-info-container">
+        <h2>Repository Information</h2>
+        <form id="repo-info-form" action="/success" method="post">
+            <label for="repo-url">Repository URL</label>
+            <input type="text" id="repo-url" name="repo_url" placeholder="Enter the repository URL" maxlength="150" required>
+            <input type="hidden" name="new_analysis" value="{{ new_analysis }}">
+            <button type="submit">Next</button>
+        </form>
     </div>
-</form>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        // Validar la URL del repositorio al enviar el formulario
+        $(document).ready(function() {
+            $("#repo-info-form").submit(function(event) {
+                var repoUrlInput = $("#repo-url");
+                var repoUrl = repoUrlInput.val();
 
-</div>
+                // Expresión regular para validar el formato de la URL
+                var urlPattern = new RegExp(/^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\.git$/);
+
+                // Validar el formato de la URL
+                if (!urlPattern.test(repoUrl)) {
+                    alert('El formato de la URL no es válido');
+                    event.preventDefault(); // Evitar que se envíe el formulario
+                }
+            });
+        });
+    </script>
 </body>
+</html>
