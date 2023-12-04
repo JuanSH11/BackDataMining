@@ -1,8 +1,8 @@
 # Proyecto de grado GITSIGHT PRO
 
 ## Autores
-Alejandro Ahogado Prieto 
-Juan Sebastián Hoyos Muñoz
+Alejandro Ahogado Prieto (a.ahogado@uniandes.edu.co)
+Juan Sebastián Hoyos Muñoz (js.hoyosm@uniandes.edu.co)
 
 ## Descripción
 
@@ -21,4 +21,14 @@ Finalmente, ejecuta el archivo "start_server.sh" encontrado en la raiz del proye
 
 *Es importante tener en cuenta que siempre que se inicie la aplicación desde cero al ejecutar este archivo, se limpiará la base de datos, por lo que en la consola te pedirá indicar la clave asignada a la base de datos. Cuando no se detiene por completo la aplicación y se realizan nuevos análisis, este procedimiento se realiza automáticamente.
 
-Dependiendo tu sistema operativo y configuración es posible que debas brindar ciertos permisos para poder ejecutar la apliación.
+Dependiendo tu sistema operativo y configuración es posible que debas brindar ciertos permisos para poder ejecutar la aplicación.
+
+## Usuario administrador
+En caso de que seas el nuevo administrador de la aplicación, en esta se implementó la autenticación con GitHub, por lo que esta debe estar registrada en OAuth Apps para poder usarla. 
+
+Si quieres registrarla desde cero, dirigete a tu cuenta de GitHub, en la sección de settings, developer settings, encontrarás OAuth Apps. En este caso se configuró con la siguiente información:
+- Name: DataMining
+- Homepage URL: http://localhost:8000
+- Authorization callback URL: http://localhost:8000/callback
+
+Una vez realices el procedimiento anterior, se te generará un Client ID y Client Secret el cuál deberas reemplazar en el archivo views.py (GITHUB_CLIENT_ID y GITHUB_CLIENT_SECRET). Esta configuración se maneja de esta manera ya que actualmente el proyecto es privado, sin embargo, si deseas aumentar la seguridad puedes manejar los secretos en tu ambiente y realizar la respectiva configuración o hacer uso de AWS secrets o algo por el estilo.
