@@ -19,7 +19,7 @@ body {
 }
 
 .login-container {
-  width: 30%; /* Ajusta el ancho del contenedor según tus necesidades */
+  width: 30%; 
   position: fixed;
   bottom: 15%;
   right: 10%;
@@ -45,7 +45,7 @@ body {
 }
 
 .github-sign-in {
-  margin-top: 20px; /* Ajusta el margen superior según tus necesidades */
+  margin-top: 20px; 
   padding: 15px 30px;
   font-size: 18px;
   background-color: #afc8d7;
@@ -60,7 +60,7 @@ body {
 }
 
 .github-sign-in img {
-  width: 20px; /* Ajusta el tamaño de la imagen según tus necesidades */
+  width: 20px; 
   margin-right: 10px;
 }
 

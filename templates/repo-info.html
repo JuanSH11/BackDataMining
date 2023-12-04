@@ -26,10 +26,9 @@
                 var repoUrlInput = $("#repo-url");
                 var repoUrl = repoUrlInput.val();
 
-                // Expresión regular para validar el formato de la URL
+                // Validar el formato de la URL
                 var urlPattern = new RegExp(/^https:\/\/github\.com\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\.git$/);
 
-                // Validar el formato de la URL
                 if (!urlPattern.test(repoUrl)) {
                     alert('El formato de la URL no es válido');
                     event.preventDefault(); // Evitar que se envíe el formulario

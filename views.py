@@ -364,7 +364,7 @@ async def form_data(
 
     # Verificar que los campos "owner" y "name" no estén vacíos 
     if owner.strip() != "" and name.strip() != "":
-        # Los campos son válidos, proceder a guardarlos en un archivo JSON (puedes utilizar el código que mencionaste antes)
+        # Los campos son válidos, proceder a guardarlos en un archivo JSON
         # Leer el archivo JSON existente, si lo hay
         existing_data = {}
         if os.path.isfile("config.json"):
@@ -387,7 +387,6 @@ async def form_data(
             analysis_state.is_new_analysis = False
 
             # Ejecutar el script de descarga de datos en segundo plano
-            # background_tasks.add_task(run_data_abstraction())
             # Ejecutar "data-abstraction.py" en un hilo separado utilizando asyncio
             loop = asyncio.get_event_loop()
             loop.run_in_executor(None, run_data_abstraction)
@@ -430,13 +429,3 @@ async def progress(request: Request):
 async def get_progress(db: Session = Depends(get_db)):
     progress = controllers.get_latest_progress(db)
     return {"progress": progress.percentage, "message": progress.message}
-
-# # Descargar datos nuevo analisis
-# async def run_data_abstraction():
-#     try: 
-#         print("Running data abstraction script...")
-#         subprocess.run(["python", "data-abstraction.py"])
-#         print("Data abstraction script executed successfully.")
-#     except Exception as e:
-#         print(f"Error during data abstraction script execution: {e}")
-#         raise HTTPException(status_code=500, detail="Error al descargar los datos")

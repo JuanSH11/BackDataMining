@@ -206,10 +206,6 @@ def update_progress(db: Session, progress_id: int, message: str = None, percenta
     if progress:
         progress.message = message
         progress.percentage = percentage
-        # if message:
-        #     progress.message = message
-        # if percentage:
-        #     progress.percentage = percentage
         db.commit()
         db.refresh(progress)
     return progress
